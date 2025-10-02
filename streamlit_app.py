@@ -66,7 +66,49 @@ with tab1:
     st.write((df1['year'].value_counts()))
     st.write("Approximately drive churn rate is same for year 2019 and 2020")
 
-    
+    # Use LastWorkingDate if available, else use last MMM-YY record for each Driver_ID
+    df1['EndDate'] = df['LastWorkingDate']
+    df1['EndDate'] = df['EndDate'].fillna(df['MMM-YY'])
+    # Calculate working duration in years
+    df1['Tenure_Years'] = (df['EndDate'] - df['Dateofjoining']).dt.days / 365
+    # Group by Driver_ID to get total income and final tenure
+    driver_summary = df1.groupby('Driver_ID').agg({
+    'Tenure_Years': 'max', # Max tenure value per driver
+    'Income': 'sum' # Total income over all months
+    }).reset_index()
+    # Round tenure for better readability
+    driver_summary['Tenure_Years'] = driver_summary['Tenure_Years'].round(2).sort_values(ascending=False)
+    # Sort by total income in descending order
+    driver_summary = driver_summary.sort_values(by='Income', ascending=False)
+    st.write(driver_summary.head())
+    st.write("drives which left the company as earn maximum upto 45lakhs to 35lakhs")
+    # check age of drivers leaves the company
+    st.write(df1[df1["Churn"]==1]['Age'].value_counts())
+    st.write("Drivers in the age of 30 to 34 left the company most")
 
-
-
+    #Graphical reprsentation for continous and categorical varibales
+    # Set style
+    sns.set(style='whitegrid')
+    # Continuous columns
+    continuous_cols = ['Age','Income','Total Business Value']
+    # Plot distributions for continuous variables
+    for col in continuous_cols:
+        plt.figure(figsize=(8,4))
+        sns.histplot(df[col].dropna(), kde=True)
+        plt.title(f'Distribution of{col}')
+        plt.xlabel(col)
+        plt.ylabel('Frequency')
+        plt.tight_layout()
+        st.write(plt.show())
+    # Categorical columns
+    categorical_cols = ['Gender','City','Education_Level','Joining Designation','Grade','Quarterly Rating']
+    # Plot countplots for categorical variables
+    for col in categorical_cols:
+        plt.figure(figsize=(8,4))
+        sns.countplot(data=df, x=col, order=df[col].value_counts().index)
+        plt.title(f'Countplot of{col}')
+        plt.xlabel(col)
+        plt.ylabel('Count')
+        plt.xticks(rotation=45)
+        plt.tight_layout()
+        st.write(plt.show())
