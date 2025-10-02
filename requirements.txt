@@ -4,3 +4,7 @@ matplotlib
 seaborn
 scikit-learn
 joblib
+imbalanced-learn
+xgboost
+lightgbm
+category_encoders
