@@ -103,7 +103,7 @@ with tab1:
         plt.xlabel(col)
         plt.ylabel('Frequency')
         plt.tight_layout()
-        st.write(plt.show())
+        plt.show()
     # Categorical columns
     categorical_cols = ['Gender','City','Education_Level','Joining Designation','Grade','Quarterly Rating']
     # Plot countplots for categorical variables
@@ -115,4 +115,4 @@ with tab1:
         plt.ylabel('Count')
         plt.xticks(rotation=45)
         plt.tight_layout()
-        st.write(plt.show())
+        plt.show()
