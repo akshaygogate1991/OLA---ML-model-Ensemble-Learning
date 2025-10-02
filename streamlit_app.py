@@ -94,25 +94,25 @@ with tab1:
     # Set style
     sns.set(style='whitegrid')
     # Continuous columns
-    continuous_cols = ['Age','Income','Total Business Value']
-    # Plot distributions for continuous variables
+    # Continuous columns
+    continuous_cols = ['Age', 'Income', 'Total Business Value']
+
     for col in continuous_cols:
-        plt.figure(figsize=(8,4))
-        sns.histplot(df[col].dropna(), kde=True)
-        plt.title(f'Distribution of{col}')
-        plt.xlabel(col)
-        plt.ylabel('Frequency')
-        plt.tight_layout()
-        st.plt.show()
+        fig, ax = plt.subplots(figsize=(8, 4))
+        sns.histplot(df[col].dropna(), kde=True, ax=ax)
+        ax.set_title(f'Distribution of {col}')
+        ax.set_xlabel(col)
+        ax.set_ylabel('Frequency')
+        st.pyplot(fig)
+    
     # Categorical columns
-    categorical_cols = ['Gender','City','Education_Level','Joining Designation','Grade','Quarterly Rating']
-    # Plot countplots for categorical variables
+    categorical_cols = ['Gender', 'City', 'Education_Level', 'Joining Designation', 'Grade', 'Quarterly Rating']
+
     for col in categorical_cols:
-        plt.figure(figsize=(8,4))
-        sns.countplot(data=df, x=col, order=df[col].value_counts().index)
-        plt.title(f'Countplot of{col}')
-        plt.xlabel(col)
-        plt.ylabel('Count')
+        fig, ax = plt.subplots(figsize=(8, 4))
+        sns.countplot(data=df, x=col, order=df[col].value_counts().index, ax=ax)
+        ax.set_title(f'Countplot of {col}')
+        ax.set_xlabel(col)
+        ax.set_ylabel('Count')
         plt.xticks(rotation=45)
-        plt.tight_layout()
-        st.plt.show()
+        st.pyplot(fig)
