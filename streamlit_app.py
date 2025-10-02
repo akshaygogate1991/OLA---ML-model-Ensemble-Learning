@@ -48,6 +48,24 @@ with tab1:
     Model Interpretability:
     Identify key drivers of churn (e.g., income, rating, city, age, etc.).
     Support HR and operational teams with explainable metrics.""")
+    st.write(df.df.info())
+    
+    df['MMM-YY'] = pd.to_datetime(df['MMM-YY'], errors='coerce')
+    df['Dateofjoining'] = pd.to_datetime(df['Dateofjoining'], errors='coerce')
+    df['LastWorkingDate'] = pd.to_datetime(df['LastWorkingDate'], errors='coerce')
+
+    df['Churn'] = df['LastWorkingDate'].notnull().astype(int)
+    st.write("Create Churn column: 1 if LastWorkingDate is present, else 0 ")
+
+    df1=df
+    df1['year'] = df1['LastWorkingDate'].dt.year
+    df1['month'] = df1['LastWorkingDate'].dt.month
+    st.write(df1['month'].value_counts())
+    st.write("Most of the drive leaves the company in month July September and November")
+
+    st.write((df1['year'].value_counts())
+    st.write("Approximately drive churn rate is same for year 2019 and 2020")
+
     
 
 
