@@ -63,7 +63,7 @@ with tab1:
     st.write(df1['month'].value_counts())
     st.write("Most of the drive leaves the company in month July September and November")
 
-    st.write((df1['year'].value_counts())
+    st.write((df1['year'].value_counts()))
     st.write("Approximately drive churn rate is same for year 2019 and 2020")
 
     
