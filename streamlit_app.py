@@ -28,26 +28,25 @@ with tab1:
     st.header("Exploratory Data Analysis 📊")
     st.write("### Dataset Preview")
     st.write(df.head(10))
-    st.write("
-Problem Statement: Ola, a leading ride-sharing platform, aims to proactively identify drivers who are at risk of attrition (churn). Driver churn
-impacts operational efficiency, customer satisfaction, and recruitment costs. Given a historical dataset containing driver demographics,
-performance metrics, and employment history, the objective is to build a predictive model using ensemble learning techniques to forecast
-whether a driver is likely to churn.
-This model should be able to generalize well on unseen data and provide interpretable, actionable insights that can support Ola’s driver
-retention strategy.
+    st.write("Problem Statement: Ola, a leading ride-sharing platform, aims to proactively identify drivers who are at risk of attrition (churn). Driver churn
+    impacts operational efficiency, customer satisfaction, and recruitment costs. Given a historical dataset containing driver demographics,
+    performance metrics, and employment history, the objective is to build a predictive model using ensemble learning techniques to forecast
+    whether a driver is likely to churn.
+    This model should be able to generalize well on unseen data and provide interpretable, actionable insights that can support Ola’s driver
+    retention strategy.
 
-Key Objectives:
+    Key Objectives:
 
-Predictive Modeling:
-Classify whether a driver will churn (Churn = 1) or stay (Churn = 0) using historical features.
-Ensemble Learning Focus:
-Apply ensemble methods (e.g., Random Forest, Gradient Boosting, XGBoost, etc.) to improve model accuracy and robustness.
-Business Impact:
-Enable early intervention strategies to retain high-risk drivers.
-Reduce churn rate and associated costs.
-Model Interpretability:
-Identify key drivers of churn (e.g., income, rating, city, age, etc.).
-Support HR and operational teams with explainable metrics.")
+    Predictive Modeling:
+    Classify whether a driver will churn (Churn = 1) or stay (Churn = 0) using historical features.
+    Ensemble Learning Focus:
+    Apply ensemble methods (e.g., Random Forest, Gradient Boosting, XGBoost, etc.) to improve model accuracy and robustness.
+    Business Impact:
+    Enable early intervention strategies to retain high-risk drivers.
+    Reduce churn rate and associated costs.
+    Model Interpretability:
+    Identify key drivers of churn (e.g., income, rating, city, age, etc.).
+    Support HR and operational teams with explainable metrics.")
     
 
 
