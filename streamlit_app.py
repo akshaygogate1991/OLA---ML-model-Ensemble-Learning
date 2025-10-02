@@ -48,7 +48,7 @@ with tab1:
     Model Interpretability:
     Identify key drivers of churn (e.g., income, rating, city, age, etc.).
     Support HR and operational teams with explainable metrics.""")
-    st.write(df.df.info())
+    st.write(df.info())
     
     df['MMM-YY'] = pd.to_datetime(df['MMM-YY'], errors='coerce')
     df['Dateofjoining'] = pd.to_datetime(df['Dateofjoining'], errors='coerce')
