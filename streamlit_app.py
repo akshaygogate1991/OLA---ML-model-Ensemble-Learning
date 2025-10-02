@@ -302,7 +302,7 @@ with tab1:
     # Compute correlation matrix
     corr_matrix = numeric_df.corr()
     # Create figure
-    fig, ax = plt.subplots(figsize=(12, 8))
+    fig, ax = plt.subplots(figsize=(5, 4))
     # Plot heatmapsns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
     # Title
     ax.set_title("Correlation Heatmap")
