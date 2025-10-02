@@ -97,7 +97,7 @@ with tab1:
     continuous_cols = ['Age', 'Income', 'Total Business Value']
 
     for col in continuous_cols:
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(3, 2))
         sns.histplot(df[col].dropna(), kde=True, ax=ax)
         ax.set_title(f'Distribution of {col}')
         ax.set_xlabel(col)
@@ -108,7 +108,7 @@ with tab1:
     categorical_cols = ['Gender', 'City', 'Education_Level', 'Joining Designation', 'Grade', 'Quarterly Rating']
 
     for col in categorical_cols:
-        fig, ax = plt.subplots(figsize=(8, 4))
+        fig, ax = plt.subplots(figsize=(4, 2))
         sns.countplot(data=df, x=col, order=df[col].value_counts().index, ax=ax)
         ax.set_title(f'Countplot of {col}')
         ax.set_xlabel(col)
@@ -173,7 +173,7 @@ with tab1:
     st.write("age vs income")
     # Scatter plot for continuous-continuous relationships
     # Create figure and axis
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(5, 3))
     # Scatter plot
     sns.scatterplot(data=df, x='Age', y='Income', ax=ax)
     # Titles and labels
@@ -247,7 +247,7 @@ with tab1:
     • Modeling Suggestion: Grade should be treated as a predictor variable in churn and income models — possibly even ordinal if treated numerically.""")
 
     # ---- Grade vs Churn (Stacked Bar Plot) ----
-    fig1, ax1 = plt.subplots(figsize=(8, 5))
+    fig1, ax1 = plt.subplots(figsize=(5, 3))
     pd.crosstab(df['Grade'], df['Churn'], normalize='index').plot(kind='bar', stacked=True, colormap='coolwarm', ax=ax1)
     ax1.set_title('Churn Rate by Grade')
     ax1.set_ylabel('Proportion')
@@ -257,7 +257,7 @@ with tab1:
     st.pyplot(fig1)
 
     # Gender vs Churn (Stacked Bar Plot) ----
-    fig2, ax2 = plt.subplots(figsize=(8, 5))
+    fig2, ax2 = plt.subplots(figsize=(5, 3))
     pd.crosstab(df['Gender'], df['Churn'], normalize='index').plot(kind='bar', stacked=True, colormap='viridis', ax=ax2    )
     ax2.set_title('Churn by Gender')
     ax2.set_ylabel('Proportion')
@@ -266,7 +266,7 @@ with tab1:
     st.pyplot(fig2)
 
     # ---- Income vs Churn (Boxplot) ----
-    fig3, ax3 = plt.subplots(figsize=(8, 5))
+    fig3, ax3 = plt.subplots(figsize=(5,3))
     sns.boxplot(data=df, x='Churn', y='Income', ax=ax3)
     ax3.set_title('Income by Churn Status')
     ax3.set_xticklabels(['Active', 'Left'])
@@ -274,7 +274,7 @@ with tab1:
     st.pyplot(fig3)
 
     # ---- Quarterly Rating vs Churn (Boxplot) ----
-    fig4, ax4 = plt.subplots(figsize=(8, 5))
+    fig4, ax4 = plt.subplots(figsize=(5,3))
     sns.boxplot(data=df, x='Churn', y='Quarterly Rating', ax=ax4)
     ax4.set_title('Quarterly Rating by Churn Status')
     ax4.set_xticklabels(['Active', 'Left'])
@@ -282,7 +282,7 @@ with tab1:
     st.pyplot(fig4)
 
     # ---- Age vs Churn (Boxplot) ----
-    fig5, ax5 = plt.subplots(figsize=(8, 5))
+    fig5, ax5 = plt.subplots(figsize=(5,3))
     sns.boxplot(data=df, x='Churn', y='Age', ax=ax5)
     ax5.set_title('Age by Churn Status')
     ax5.set_xticklabels(['Active', 'Left'])
@@ -290,7 +290,7 @@ with tab1:
     st.pyplot(fig5)
 
     # ---- Total Business Value vs Churn (Boxplot) ----
-    fig6, ax6 = plt.subplots(figsize=(8, 5))
+    fig6, ax6 = plt.subplots(figsize=( 5,3))
     sns.boxplot(data=df, x='Churn', y='Total Business Value', ax=ax6)
     ax6.set_title("Business Value vs Churn Status")
     plt.tight_layout()
@@ -302,7 +302,7 @@ with tab1:
     # Compute correlation matrix
     corr_matrix = numeric_df.corr()
     # Create figure
-    fig, ax = plt.subplots(figsize=(5, 4))
+    fig, ax = plt.subplots(figsize=(1,0.5))
     # Plot heatmapsns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
     # Title
     ax.set_title("Correlation Heatmap")
