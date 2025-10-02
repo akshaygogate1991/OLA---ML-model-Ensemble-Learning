@@ -97,7 +97,7 @@ with tab1:
     continuous_cols = ['Age', 'Income', 'Total Business Value']
 
     for col in continuous_cols:
-        fig, ax = plt.subplots(figsize=(0.4, 0.25))
+        fig, ax = plt.subplots(figsize=(4, 2.5))
         sns.histplot(df[col].dropna(), kde=True, ax=ax)
         ax.set_title(f'Distribution of {col}')
         ax.set_xlabel(col)
