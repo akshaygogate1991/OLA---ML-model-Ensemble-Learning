@@ -97,7 +97,7 @@ with tab1:
     continuous_cols = ['Age', 'Income', 'Total Business Value']
 
     for col in continuous_cols:
-        fig, ax = plt.subplots(figsize=(3, 2))
+        fig, ax = plt.subplots(figsize=(4, 2.5))
         sns.histplot(df[col].dropna(), kde=True, ax=ax)
         ax.set_title(f'Distribution of {col}')
         ax.set_xlabel(col)
@@ -108,7 +108,7 @@ with tab1:
     categorical_cols = ['Gender', 'City', 'Education_Level', 'Joining Designation', 'Grade', 'Quarterly Rating']
 
     for col in categorical_cols:
-        fig, ax = plt.subplots(figsize=(4, 2))
+        fig, ax = plt.subplots(figsize=(4, 2.5))
         sns.countplot(data=df, x=col, order=df[col].value_counts().index, ax=ax)
         ax.set_title(f'Countplot of {col}')
         ax.set_xlabel(col)
@@ -209,7 +209,7 @@ with tab1:
     st.write("Box plot for categorical-continuous relationships")
 
     # Create figure and axis
-    fig, ax = plt.subplots(figsize=(8, 5))
+    fig, ax = plt.subplots(figsize=(5, 3))
     # Boxplot
     sns.boxplot(data=df, x='Grade', y='Income', ax=ax)
     # Titles and labels
@@ -302,7 +302,7 @@ with tab1:
     # Compute correlation matrix
     corr_matrix = numeric_df.corr()
     # Create figure
-    fig, ax = plt.subplots(figsize=(1,0.5))
+    fig, ax = plt.subplots(figsize=(6, 4))
     # Plot heatmapsns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
     # Title
     ax.set_title("Correlation Heatmap")
