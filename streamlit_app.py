@@ -90,10 +90,9 @@ with tab1:
     st.write(df1[df1["Churn"]==1]['Age'].value_counts())
     st.write("Drivers in the age of 30 to 34 left the company most")
 
-    #Graphical reprsentation for continous and categorical varibales
+    st.write("# Graphical reprsentation for continous and categorical varibales")
     # Set style
     sns.set(style='whitegrid')
-    # Continuous columns
     # Continuous columns
     continuous_cols = ['Age', 'Income', 'Total Business Value']
 
@@ -120,13 +119,15 @@ with tab1:
     🔹 Age Distribution The age distribution is positively skewed, with most drivers aged between 28 and 38 years.
     The modal age group is around 32–35 years, highlighting this as the most common age bracket.
     Very few drivers are older than 45, and drivers above 50 are rare.
-    Implication: Ola’s driver base is relatively young. Retention strategies should focus on early-career engagement, career progression, and long-term incentives.
+    Implication: Ola’s driver base is relatively young. Retention strategies should focus on early-career engagement, career progression, 
+    and long-term incentives.
 
 
     🔹 Income Distribution Income is also right-skewed, with a long tail toward higher earnings.
     Most drivers earn between ₹35,000 and ₹75,000, with a peak in the ₹50,000–₹60,000 range.
     High earners (above ₹1,25,000) are rare.
-    Implication: While income varies widely, the majority fall in a mid-income bracket. Income could be a strong predictor of churn, with differentmotivations for low- vs. high-income drivers.
+    Implication: While income varies widely, the majority fall in a mid-income bracket. Income could be a strong predictor of churn, with 
+    differentmotivations for low- vs. high-income drivers.
 
     🔹 Total Business Value (TBV) Extremely right-skewed with a sharp spike near zero and a long tail of high performers.
     Many drivers show minimal TBV, possibly due to short tenure or low activity.
@@ -138,11 +139,13 @@ with tab1:
 
     🔹 City Drivers are spread across many cities, with C20, C29, and C26 having the highest counts (~1,000 each).
     Smaller cities have ~400–500 drivers.
-    Implication: A few urban centers dominate the driver population. Consider grouping low-volume cities into an "Other" category or applyingtarget encoding.
+    Implication: A few urban centers dominate the driver population. Consider grouping low-volume cities into an "Other" category or 
+    applyingtarget encoding.
 
     🔹 Education Level Encoded as 0, 1, 2.
     Fairly balanced: Level 1 (6,900) slightly ahead of 2 (6,300) and 0 (~5,900).
-    Implication: Drivers come from diverse educational backgrounds, likely not a strong standalone churn predictor but may interact with Gradeor Income.
+    Implication: Drivers come from diverse educational backgrounds, likely not a strong standalone churn predictor but may interact 
+    with Gradeor Income.
 
     🔹 Joining Designation Highly imbalanced:
     Designation 1 dominates (~9,800 drivers). 
@@ -167,8 +170,8 @@ with tab1:
     Target features like TBV, Income, and Rating may have strong predictive power for churn. """)
 
     st.write("# Bivariate graphical checking")
-    st.write("# age vs income")
-    st.write("# Scatter plot for continuous-continuous relationships")
+    st.write("age vs income")
+    # Scatter plot for continuous-continuous relationships
     # Create figure and axis
     fig, ax = plt.subplots(figsize=(8, 5))
     # Scatter plot
@@ -181,5 +184,163 @@ with tab1:
     plt.tight_layout()
     # Display plot in Streamlit
     st.pyplot(fig)
+
+    st.write("""
+    1. Income Pattern Across Age • Income appears to increase with age until around 35–40 years, after which it starts to plateau or slightly
+    decline. • This suggests that experience contributes to higher income in early to mid-career, but there may be diminishing returns or
+    attrition effects after 45.
+    2. High-Density Zone • There is a high concentration of points between: o Age: 28 to 40 years o Income: ₹40,000 to ₹100,000 • This
+    indicates that the core workforce of drivers falls within this age-income bracket.
+    3. Outliers • A few data points show incomes above ₹150,000, particularly between the ages of 28–38. • These may be top performers,
+    special assignments, or anomalies worth investigating.
+    4. Older Age Group Trends • Post age 45, the density of drivers drops, and their incomes also appear more scattered and lower. • This
+    could indicate: o Lower income opportunities for older drivers o Early retirement or career transitions o Health or performance
+    constraints impacting income
+    5. Younger Drivers (20–25) • Income levels for drivers aged below 25 are relatively low and varied. • Possibly due to: o Being new to the
+    platform o Fewer hours worked o Limited access to high-earning opportunities
+    
+    Insights & Implications • 
+    Workforce Focus: Majority of drivers earning mid-to-high income are in the 30–40 age range. This could be the
+    sweet spot for engagement, retention, and promotion. • Policy Direction: o Offer career growth plans for younger drivers. o Support older
+    drivers with incentives or alternative roles if income tends to decline. • Modeling Note: There may be a non-linear relationship between age
+    and income. Consider polynomial features or binning age when building predictive models.""")
+
+    st.write("# grade vs income")
+    st.write("Box plot for categorical-continuous relationships")
+
+    # Create figure and axis
+    fig, ax = plt.subplots(figsize=(8, 5))
+    # Boxplot
+    sns.boxplot(data=df, x='Grade', y='Income', ax=ax)
+    # Titles and labels
+    ax.set_title('Income by Grade')
+    ax.set_xlabel('Grade')
+    ax.set_ylabel('Income')
+    # Layout adjustment
+    plt.tight_layout()
+    # Display plot in Streamlit
+    st.pyplot(fig)
+
+    st.write("""
+    1. Positive Correlation 
+    • There is a clear upward trend: As the Grade increases from 1 to 5, the median income rises significantly. 
+    • This suggests that Grade is a strong indicator of driver income, and likely tied to experience, performance, or tenure.
+    2. Median Incomes by Grade 
+    • Grade 1: Median income around ₹40,000 
+    • Grade 2: Median near ₹60,000 
+    • Grade 3: Median around ₹85,000 
+    • Grade 4: Median around ₹110,000 
+    • Grade 5: Median around ₹135,000+ The growth is consistent and significant across grades.
+    3. Interquartile Range (IQR) and Spread 
+    • The spread increases with grade, especially for Grades 3 to 5. 
+    • This indicates more variability in income at higher grades — likely due to performance-based pay or variable workloads.
+    4. Outliers 
+    • Some outliers are present at all grades, both high and low: o Lower-grade outliers show higher incomes (possibly high
+    performers or bonuses). o Higher-grade outliers with lower incomes may suggest inactivity, part-time work, or data anomalies.
+    5. Lower Bound Shift 
+    • The minimum incomes also shift upward with grade, indicating even the lowest earners in higher grades still make
+    more than most low-grade drivers.
+    
+    Insights & Implications 
+    • Career Incentive Structure: The strong income–grade linkage suggests that promoting drivers to higher grades is
+    financially rewarding and can be used to boost retention. 
+    • Modeling Suggestion: Grade should be treated as a predictor variable in churn and income models — possibly even ordinal if treated numerically.""")
+
+    # ---- Grade vs Churn (Stacked Bar Plot) ----
+    fig1, ax1 = plt.subplots(figsize=(8, 5))
+    pd.crosstab(df['Grade'], df['Churn'], normalize='index').plot(kind='bar', stacked=True, colormap='coolwarm', ax=ax1)
+    ax1.set_title('Churn Rate by Grade')
+    ax1.set_ylabel('Proportion')
+    ax1.set_xlabel('Grade')
+    ax1.legend(title='Churn', labels=['Active (0)', 'Left (1)'])
+    plt.tight_layout()
+    st.pyplot(fig1)
+
+    # Gender vs Churn (Stacked Bar Plot) ----
+    fig2, ax2 = plt.subplots(figsize=(8, 5))
+    pd.crosstab(df['Gender'], df['Churn'], normalize='index').plot(kind='bar', stacked=True, colormap='viridis', ax=ax2    )
+    ax2.set_title('Churn by Gender')
+    ax2.set_ylabel('Proportion')
+    ax2.set_xlabel('Gender')
+    plt.tight_layout()
+    st.pyplot(fig2)
+
+    # ---- Income vs Churn (Boxplot) ----
+    fig3, ax3 = plt.subplots(figsize=(8, 5))
+    sns.boxplot(data=df, x='Churn', y='Income', ax=ax3)
+    ax3.set_title('Income by Churn Status')
+    ax3.set_xticklabels(['Active', 'Left'])
+    plt.tight_layout()
+    st.pyplot(fig3)
+
+    # ---- Quarterly Rating vs Churn (Boxplot) ----
+    fig4, ax4 = plt.subplots(figsize=(8, 5))
+    sns.boxplot(data=df, x='Churn', y='Quarterly Rating', ax=ax4)
+    ax4.set_title('Quarterly Rating by Churn Status')
+    ax4.set_xticklabels(['Active', 'Left'])
+    plt.tight_layout()
+    st.pyplot(fig4)
+
+    # ---- Age vs Churn (Boxplot) ----
+    fig5, ax5 = plt.subplots(figsize=(8, 5))
+    sns.boxplot(data=df, x='Churn', y='Age', ax=ax5)
+    ax5.set_title('Age by Churn Status')
+    ax5.set_xticklabels(['Active', 'Left'])
+    plt.tight_layout()
+    st.pyplot(fig5)
+
+    # ---- Total Business Value vs Churn (Boxplot) ----
+    fig6, ax6 = plt.subplots(figsize=(8, 5))
+    sns.boxplot(data=df, x='Churn', y='Total Business Value', ax=ax6)
+    ax6.set_title("Business Value vs Churn Status")
+    plt.tight_layout()
+    st.pyplot(fig6)
+
+    st.write("# Checking correlation of columns")
+    # Select only numeric columns for correlation analysis
+    numeric_df = df.select_dtypes(include=['number'])
+    # Compute correlation matrix
+    corr_matrix = numeric_df.corr()
+    # Create figure
+    fig, ax = plt.subplots(figsize=(12, 8))
+    # Plot heatmapsns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
+    # Title
+    ax.set_title("Correlation Heatmap")
+    # Layout adjustment
+    plt.tight_layout()
+    # Display in Streamlit
+    st.pyplot(fig)
+
+    st.write("""
+    The data strongly suggests that employee performance and seniority are the primary drivers of churn. Employees with low 
+    quarterly ratingsand those in lower grades are significantly more likely to leave the company. In contrast, demographic factors like 
+    gender and age appear tohave little to no impact on an employee's decision to leave.
+    
+    Performance is a Key Predictor of Churn
+The most significant factor related to employee churn is the Quarterly Rating. • CorrelationHeatmap: Shows a moderate negative correlation of 
+-0.26 between Quarterly Rating and Churn. This indicates that as an employee's ratinggoes down, the likelihood of them leaving goes up. 
+• Quarterly Rating Boxplot: This chart provides a stark visual confirmation. The vastmajority of employees who left had a quarterly rating of 1. 
+In contrast, active employees have a much highermedian rating and a widerdistribution of scores. This implies that poor performance is a major
+reason for attrition.Drivers who stayed (Churn=0) generally generated higher business value. This supports the hypothesis that high-performing 
+drivers aremore likely to stay, a useful signal for retention modeling."
+Seniority and Grade MatterAn employee's grade and designation, which are linked to seniority and responsibility, also play a crucial role. •Churn 
+Rate by Grade: The stacked bar chart clearly shows that employees in Grade 1 have the highest proportion of churn. This churn rateprogressively 
+decreases as the grade level increases up to Grade 4. This suggests that entry-level or junior employees are the most likely -0.20). Note that Grade and 
+Joining Designation are strongly correlated with each other (0.56) and with Income (0.78), creating a cluster offactors related to seniority.
+Demographics Show Little Impact Demographic factors do not appear to be significant drivers of churn in this dataset. • Gender: The Churnby Gender c
+hart shows that the proportion of employees leaving is almost identical for both genders. The heatmap confirms this with a near-zero correlation
+of 0.013. • Age: The Age by Churn Status boxplot shows that the median age of employees who left is only slightly lower thanthat of active employees. 
+The distributions largely overlap, indicating age is not 
+a strong differentiator. • Income: While the median income foremployees who left is slightly lower, the Income by Churn Status boxplot shows
+a very large overlap between the two groups.
+The weakcorrelation of -0.1 in the heatmap confirms that income is not a primary driver of churn on its own.""")
+
+
+
+
+
+    
+
+
 
     
