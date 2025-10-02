@@ -69,6 +69,7 @@ with tab1:
     # Use LastWorkingDate if available, else use last MMM-YY record for each Driver_ID
     df1['EndDate'] = df['LastWorkingDate']
     df1['EndDate'] = df['EndDate'].fillna(df['MMM-YY'])
+    
     # Calculate working duration in years
     df1['Tenure_Years'] = (df['EndDate'] - df['Dateofjoining']).dt.days / 365
     # Group by Driver_ID to get total income and final tenure
@@ -76,12 +77,15 @@ with tab1:
     'Tenure_Years': 'max', # Max tenure value per driver
     'Income': 'sum' # Total income over all months
     }).reset_index()
-    # Round tenure for better readability
+    
+    # Round tenure for better readability    
     driver_summary['Tenure_Years'] = driver_summary['Tenure_Years'].round(2).sort_values(ascending=False)
+    
     # Sort by total income in descending order
     driver_summary = driver_summary.sort_values(by='Income', ascending=False)
     st.write(driver_summary.head())
     st.write("drives which left the company as earn maximum upto 45lakhs to 35lakhs")
+    
     # check age of drivers leaves the company
     st.write(df1[df1["Churn"]==1]['Age'].value_counts())
     st.write("Drivers in the age of 30 to 34 left the company most")
