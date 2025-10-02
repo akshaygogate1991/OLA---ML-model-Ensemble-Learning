@@ -116,47 +116,70 @@ with tab1:
         ax.set_ylabel('Count')
         plt.xticks(rotation=45)
         st.pyplot(fig)
-    st.write("""🔹 Age Distribution The age distribution is positively skewed, with most drivers aged between 28 and 38 years.
-The modal age group is around 32–35 years, highlighting this as the most common age bracket.
-Very few drivers are older than 45, and drivers above 50 are rare.
-Implication: Ola’s driver base is relatively young. Retention strategies should focus on early-career engagement, career progression, and long-term incentives.
-🔹 Income Distribution Income is also right-skewed, with a long tail toward higher earnings.
-Most drivers earn between ₹35,000 and ₹75,000, with a peak in the ₹50,000–₹60,000 range.
-High earners (above ₹1,25,000) are rare.
-Implication: While income varies widely, the majority fall in a mid-income bracket. Income could be a strong predictor of churn, with differentmotivations for low- vs. high-income drivers.
-🔹 Total Business Value (TBV) Extremely right-skewed with a sharp spike near zero and a long tail of high performers.
-Many drivers show minimal TBV, possibly due to short tenure or low activity.
-Implication: Apply log transformation to normalize TBV. Investigate high TBV outliers as potential top performers or data errors.
-🔹 Gender Two encoded categories: 0.0 and 1.0.
-Category 0.0 is slightly more common (
-11,000 drivers) than 1.0 (
-8,000).
-Implication: Mild imbalance—may be usable as-is, but monitor for bias in churn modeling.
-🔹 City Drivers are spread across many cities, with C20, C29, and C26 having the highest counts (~1,000 each).
-Smaller cities have ~400–500 drivers.
-Implication: A few urban centers dominate the driver population. Consider grouping low-volume cities into an "Other" category or applyingtarget encoding.
-🔹 Education Level Encoded as 0, 1, 2.
-Fairly balanced: Level 1 (
-6,900) slightly ahead of 2 (
-6,300) and 0 (~5,900).
-Implication: Drivers come from diverse educational backgrounds, likely not a strong standalone churn predictor but may interact with Gradeor Income.
-🔹 Joining Designation Highly imbalanced:
-Designation 1 dominates (~9,800 drivers).
-Designations 2 (
-6,000), 3 (
-2,800) are less common.
-Designations 4 and 5 are rare (<500).
-Implication: Most drivers join at the lowest level. Consider grouping rare designations or using ordinal encoding.
-🔹 Grade Majority in Grade 2 (
-6,600), followed by Grades 1 and 3 (
-5,000 each).
-Grades 4 (~2,100) and 5 (<500) are rare.
-Implication: Strong central tendency in grading. Merge sparse categories for modeling stability.
-🔹 Quarterly Rating Strongly skewed toward lower ratings:
-Rating 1 has ~7,600 drivers.
-Ratings 2–4 decline sharply.
-Implication: Potential link between low performance and churn. A candidate for feature interaction with TBV or Grade.
-🔑 Key Takeaways for Modeling: Skewed variables (Age, Income, TBV) require transformation or binning.
-High cardinality (City) and imbalanced variables (Grade, Designation, Rating) need careful encoding.
-Categorical variables show interpretable patterns, especially where performance or tenure may vary (e.g., Ratings, Grades).
-Target features like TBV, Income, and Rating may have strong predictive power for churn. """)
+    st.write("""
+    🔹 Age Distribution The age distribution is positively skewed, with most drivers aged between 28 and 38 years.
+    The modal age group is around 32–35 years, highlighting this as the most common age bracket.
+    Very few drivers are older than 45, and drivers above 50 are rare.
+    Implication: Ola’s driver base is relatively young. Retention strategies should focus on early-career engagement, career progression, and long-term incentives.
+
+
+    🔹 Income Distribution Income is also right-skewed, with a long tail toward higher earnings.
+    Most drivers earn between ₹35,000 and ₹75,000, with a peak in the ₹50,000–₹60,000 range.
+    High earners (above ₹1,25,000) are rare.
+    Implication: While income varies widely, the majority fall in a mid-income bracket. Income could be a strong predictor of churn, with differentmotivations for low- vs. high-income drivers.
+
+    🔹 Total Business Value (TBV) Extremely right-skewed with a sharp spike near zero and a long tail of high performers.
+    Many drivers show minimal TBV, possibly due to short tenure or low activity.
+    Implication: Apply log transformation to normalize TBV. Investigate high TBV outliers as potential top performers or data errors.
+
+    🔹 Gender Two encoded categories: 0.0 and 1.0.
+    Category 0.0 is slightly more common (11,000 drivers) than 1.0 (8,000).
+    Implication: Mild imbalance—may be usable as-is, but monitor for bias in churn modeling.
+
+    🔹 City Drivers are spread across many cities, with C20, C29, and C26 having the highest counts (~1,000 each).
+    Smaller cities have ~400–500 drivers.
+    Implication: A few urban centers dominate the driver population. Consider grouping low-volume cities into an "Other" category or applyingtarget encoding.
+
+    🔹 Education Level Encoded as 0, 1, 2.
+    Fairly balanced: Level 1 (6,900) slightly ahead of 2 (6,300) and 0 (~5,900).
+    Implication: Drivers come from diverse educational backgrounds, likely not a strong standalone churn predictor but may interact with Gradeor Income.
+
+    🔹 Joining Designation Highly imbalanced:
+    Designation 1 dominates (~9,800 drivers). 
+    Designations 2 (6,000), 
+    Designation 3 (2,800) are less common.
+    Designations 4 and 5 are rare (<500).
+    Implication: Most drivers join at the lowest level. Consider grouping rare designations or using ordinal encoding.
+    
+    🔹 Grade Majority:
+    in Grade 2 (6,600), followed by Grades 1 and 3 (5,000 each).Grades 4 (~2,100) and 5 (<500) are rare.
+    Implication: Strong central tendency in grading. Merge sparse categories for modeling stability.
+    
+    🔹 Quarterly Rating Strongly skewed toward lower ratings:
+    Rating 1 has ~7,600 drivers.
+    Ratings 2–4 decline sharply.
+    Implication: Potential link between low performance and churn. A candidate for feature interaction with TBV or Grade.
+
+    
+    🔑 Key Takeaways for Modeling: Skewed variables (Age, Income, TBV) require transformation or binning.
+    High cardinality (City) and imbalanced variables (Grade, Designation, Rating) need careful encoding.
+    Categorical variables show interpretable patterns, especially where performance or tenure may vary (e.g., Ratings, Grades).
+    Target features like TBV, Income, and Rating may have strong predictive power for churn. """)
+
+    st.write("# Bivariate graphical checking")
+    st.write("# age vs income")
+    st,write("# Scatter plot for continuous-continuous relationships")
+    # Create figure and axis
+    fig, ax = plt.subplots(figsize=(8, 5))
+    # Scatter plot
+    sns.scatterplot(data=df, x='Age', y='Income', ax=ax)
+    # Titles and labels
+    ax.set_title('Age vs Income')
+    ax.set_xlabel('Age')
+    ax.set_ylabel('Income')\
+    # Layout adjustment
+    plt.tight_layout()
+    # Display plot in Streamlit
+    st.pyplot(fig)
+
+    
