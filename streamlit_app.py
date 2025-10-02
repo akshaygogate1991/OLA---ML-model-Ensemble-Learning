@@ -168,7 +168,7 @@ with tab1:
 
     st.write("# Bivariate graphical checking")
     st.write("# age vs income")
-    st,write("# Scatter plot for continuous-continuous relationships")
+    st.write("# Scatter plot for continuous-continuous relationships")
     # Create figure and axis
     fig, ax = plt.subplots(figsize=(8, 5))
     # Scatter plot
