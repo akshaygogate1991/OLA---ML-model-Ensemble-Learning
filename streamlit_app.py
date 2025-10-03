@@ -317,30 +317,82 @@ with tab1:
     gender and age appear tohave little to no impact on an employee's decision to leave.
     
     Performance is a Key Predictor of Churn
-The most significant factor related to employee churn is the Quarterly Rating. • CorrelationHeatmap: Shows a moderate negative correlation of 
--0.26 between Quarterly Rating and Churn. This indicates that as an employee's ratinggoes down, the likelihood of them leaving goes up. 
-• Quarterly Rating Boxplot: This chart provides a stark visual confirmation. The vastmajority of employees who left had a quarterly rating of 1. 
-In contrast, active employees have a much highermedian rating and a widerdistribution of scores. This implies that poor performance is a major
-reason for attrition.Drivers who stayed (Churn=0) generally generated higher business value. This supports the hypothesis that high-performing 
-drivers aremore likely to stay, a useful signal for retention modeling."
-Seniority and Grade MatterAn employee's grade and designation, which are linked to seniority and responsibility, also play a crucial role. •Churn 
-Rate by Grade: The stacked bar chart clearly shows that employees in Grade 1 have the highest proportion of churn. This churn rateprogressively 
-decreases as the grade level increases up to Grade 4. This suggests that entry-level or junior employees are the most likely -0.20). Note that Grade and 
-Joining Designation are strongly correlated with each other (0.56) and with Income (0.78), creating a cluster offactors related to seniority.
-Demographics Show Little Impact Demographic factors do not appear to be significant drivers of churn in this dataset. • Gender: The Churnby Gender c
-hart shows that the proportion of employees leaving is almost identical for both genders. The heatmap confirms this with a near-zero correlation
-of 0.013. • Age: The Age by Churn Status boxplot shows that the median age of employees who left is only slightly lower thanthat of active employees. 
-The distributions largely overlap, indicating age is not 
-a strong differentiator. • Income: While the median income foremployees who left is slightly lower, the Income by Churn Status boxplot shows
-a very large overlap between the two groups.
-The weakcorrelation of -0.1 in the heatmap confirms that income is not a primary driver of churn on its own.""")
+    The most significant factor related to employee churn is the Quarterly Rating. • CorrelationHeatmap: Shows a moderate negative correlation of 
+    -0.26 between Quarterly Rating and Churn. This indicates that as an employee's ratinggoes down, the likelihood of them leaving goes up. 
+    • Quarterly Rating Boxplot: This chart provides a stark visual confirmation. The vastmajority of employees who left had a quarterly rating of 1. 
+    In contrast, active employees have a much highermedian rating and a widerdistribution of scores. This implies that poor performance is a major
+    reason for attrition.Drivers who stayed (Churn=0) generally generated higher business value. This supports the hypothesis that high-performing 
+    drivers aremore likely to stay, a useful signal for retention modeling."
+    Seniority and Grade MatterAn employee's grade and designation, which are linked to seniority and responsibility, also play a crucial role. •Churn 
+    Rate by Grade: The stacked bar chart clearly shows that employees in Grade 1 have the highest proportion of churn. This churn rateprogressively 
+    decreases as the grade level increases up to Grade 4. This suggests that entry-level or junior employees are the most likely -0.20). Note that Grade and 
+    Joining Designation are strongly correlated with each other (0.56) and with Income (0.78), creating a cluster offactors related to seniority.
+    Demographics Show Little Impact Demographic factors do not appear to be significant drivers of churn in this dataset. • Gender: The Churnby Gender c
+    hart shows that the proportion of employees leaving is almost identical for both genders. The heatmap confirms this with a near-zero correlation
+    of 0.013. • Age: The Age by Churn Status boxplot shows that the median age of employees who left is only slightly lower thanthat of active employees. 
+    The distributions largely overlap, indicating age is not 
+    a strong differentiator. • Income: While the median income foremployees who left is slightly lower, the Income by Churn Status boxplot shows
+    a very large overlap between the two groups.
+    The weakcorrelation of -0.1 in the heatmap confirms that income is not a primary driver of churn on its own.""")
+
+    # removing duplicates
+    # Find complete duplicate rows
+    duplicate_rows = df[df.duplicated()]
+    from sklearn.impute import KNNImputer
 
 
+    # Select only the relevant columns for imputation
+    subset_cols = ['Age', 'Gender']
+    df_subset = df[subset_cols]
 
+    # Apply KNN Imputer
+    imputer = KNNImputer(n_neighbors=5)
+    df_imputed = pd.DataFrame(imputer.fit_transform(df_subset), columns=subset_cols)
 
+    # Update the original DataFrame with imputed values
+    df['Age'] = df_imputed['Age']
+    df['Gender'] = df_imputed['Gender']
 
+    # Once again, check for missing values
+    missing_summary = df.isnull().sum()
+    missing_summary = missing_summary[missing_summary > 0].sort_values(ascending=False)
+
+    # checking by IQR method
+    def cap_outliers_iqr(df, col):
+    Q1 = df[col].quantile(0.25)
+    Q3 = df[col].quantile(0.75)
+    IQR = Q3 - Q1
+    lower = Q1 - 1.5 * IQR
+    upper = Q3 + 1.5 * IQR
+    df[col] = df[col].clip(lower, upper)
+    return df
+
+    for col in cols:
+        df = cap_outliers_iqr(df, col)
+    # flage creation
+    # High Business Value Driver
+    threshold_bv = df['Total Business Value'].quantile(0.90)
+    df['High_Business_Value_Flag'] = (df['Total Business Value'] >= threshold_bv).astype(int)
+    # Low Income Driver
+    threshold_income = df['Income'].quantile(0.10)
+    df['Low_Income_Flag'] = (df['Income'] <= threshold_income).astype(int)
+    # Senior Age Group Flag
+    df['Senior_Driver_Flag'] = (df['Age'] > 50).astype(int)
+    # Recent Joiner Flag
+    df['Recent_Joiner_Flag'] = (df['Tenure_Years'] < 1).astype(int)
+    # Low Rating Flag
+    df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
     
-
-
-
-    
+    st.write("# Churn Rate by City") 
+    # Calculate churn rate by city
+    city_churn_rate = df.groupby('City')['Churn'].mean().sort_values(ascending=False)
+    # Create figure
+    fig, ax = plt.subplots(figsize=(2, 1))  # smaller size for Streamlit
+    city_churn_rate.plot(kind='bar', ax=ax, color='skyblue')
+    # Add labels and title
+    ax.set_title('Churn Rate by City')
+    ax.set_xlabel('City')
+    ax.set_ylabel('Churn Rate')
+    # Show plot in Streamlit
+    st.pyplot(fig)
+   
