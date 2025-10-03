@@ -387,8 +387,7 @@ with tab1:
     df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
 
 
-
-    with tab2:
+with tab2:
     st.header("🤖 ML Prediction and Model Comparison")
 
     # Train-Test Split (data already cleaned in Tab1)
@@ -462,6 +461,7 @@ with tab1:
 
     best_model = results_df.iloc[0]["Model"]
     st.success(f"🏆 Best Model Selected: {best_model}")
+
 
     
 
