@@ -97,24 +97,24 @@ with tab1:
     continuous_cols = ['Age', 'Income', 'Total Business Value']
 
     for col in continuous_cols:
-        fig, ax = plt.subplots(figsize=(4, 2.5),use_container_width=False)
+        fig, ax = plt.subplots(figsize=(4, 2.5))
         sns.histplot(df[col].dropna(), kde=True, ax=ax)
         ax.set_title(f'Distribution of {col}')
         ax.set_xlabel(col)
         ax.set_ylabel('Frequency')
-        st.pyplot(fig)
+        st.pyplot(fig,use_container_width=False)
     
     # Categorical columns
     categorical_cols = ['Gender', 'City', 'Education_Level', 'Joining Designation', 'Grade', 'Quarterly Rating']
 
     for col in categorical_cols:
-        fig, ax = plt.subplots(figsize=(4, 2.5),use_container_width=False)
+        fig, ax = plt.subplots(figsize=(4, 2.5))
         sns.countplot(data=df, x=col, order=df[col].value_counts().index, ax=ax)
         ax.set_title(f'Countplot of {col}')
         ax.set_xlabel(col)
         ax.set_ylabel('Count')
         plt.xticks(rotation=45)
-        st.pyplot(fig)
+        st.pyplot(fig,use_container_width=False)
     st.write("""
     🔹 Age Distribution The age distribution is positively skewed, with most drivers aged between 28 and 38 years.
     The modal age group is around 32–35 years, highlighting this as the most common age bracket.
