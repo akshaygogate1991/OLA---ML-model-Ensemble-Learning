@@ -502,7 +502,7 @@ with tab1:
 
     # Example: assume df is already loaded and cols_to_drop is defined
     st.header("Data Preparation and Train-Test Split")
-
+    cols_to_drop = ['Unnamed: 0','Driver_ID','MMM-YY','Dateofjoining','LastWorkingDate','year','month','EndDate']
     # Drop unwanted columns
     df_model = df.drop(columns=cols_to_drop)
 
