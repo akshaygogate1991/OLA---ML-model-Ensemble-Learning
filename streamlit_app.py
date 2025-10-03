@@ -368,8 +368,13 @@ with tab1:
         return df
 
 
+    # Select only numeric columns
+    cols = df.select_dtypes(include=['number']).columns
+
+    # Apply IQR capping for each numeric column
     for col in cols:
         df = cap_outliers_iqr(df, col)
+
     # flage creation
     # High Business Value Driver
     threshold_bv = df['Total Business Value'].quantile(0.90)
