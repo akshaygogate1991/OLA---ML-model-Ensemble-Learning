@@ -254,7 +254,7 @@ with tab1:
     ax1.set_xlabel('Grade')
     ax1.legend(title='Churn', labels=['Active (0)', 'Left (1)'])
     plt.tight_layout()
-    st.pyplot(fig1)
+    st.pyplot(fig1,use_container_width=False)
 
     # Gender vs Churn (Stacked Bar Plot) ----
     fig2, ax2 = plt.subplots(figsize=(5, 3))
@@ -263,7 +263,7 @@ with tab1:
     ax2.set_ylabel('Proportion')
     ax2.set_xlabel('Gender')
     plt.tight_layout()
-    st.pyplot(fig2)
+    st.pyplot(fig2,use_container_width=False)
 
     # ---- Income vs Churn (Boxplot) ----
     fig3, ax3 = plt.subplots(figsize=(5,3))
@@ -271,7 +271,7 @@ with tab1:
     ax3.set_title('Income by Churn Status')
     ax3.set_xticklabels(['Active', 'Left'])
     plt.tight_layout()
-    st.pyplot(fig3)
+    st.pyplot(fig3,use_container_width=False)
 
     # ---- Quarterly Rating vs Churn (Boxplot) ----
     fig4, ax4 = plt.subplots(figsize=(5,3))
@@ -279,7 +279,7 @@ with tab1:
     ax4.set_title('Quarterly Rating by Churn Status')
     ax4.set_xticklabels(['Active', 'Left'])
     plt.tight_layout()
-    st.pyplot(fig4)
+    st.pyplot(fig4,use_container_width=False)
 
     # ---- Age vs Churn (Boxplot) ----
     fig5, ax5 = plt.subplots(figsize=(5,3))
@@ -287,14 +287,14 @@ with tab1:
     ax5.set_title('Age by Churn Status')
     ax5.set_xticklabels(['Active', 'Left'])
     plt.tight_layout()
-    st.pyplot(fig5)
+    st.pyplot(fig5,use_container_width=False)
 
     # ---- Total Business Value vs Churn (Boxplot) ----
     fig6, ax6 = plt.subplots(figsize=( 5,3))
     sns.boxplot(data=df, x='Churn', y='Total Business Value', ax=ax6)
     ax6.set_title("Business Value vs Churn Status")
     plt.tight_layout()
-    st.pyplot(fig6)
+    st.pyplot(fig6,use_container_width=False)
 
     st.write("# Checking correlation of columns")
     # Select only numeric columns for correlation analysis
