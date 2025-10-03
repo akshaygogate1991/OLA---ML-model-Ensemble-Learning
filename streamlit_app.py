@@ -386,17 +386,16 @@ with tab1:
     df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
     
     st.write("# Churn Rate by City") 
-    # Calculate churn rate by city
-    city_churn_rate = df.groupby('City')['Churn'].mean().sort_values(ascending=False)
-    # Create figure
-    fig, ax = plt.subplots(figsize=(8, 4))  # smaller size for Streamlit
+    city_churn_rate = df.dropna(subset=['City']).groupby('City')['Churn'].mean().sort_values(ascending=False)
+
+    fig, ax = plt.subplots(figsize=(8, 4))
     city_churn_rate.plot(kind='bar', ax=ax, color='skyblue')
-    # Add labels and title
     ax.set_title('Churn Rate by City')
     ax.set_xlabel('City')
     ax.set_ylabel('Churn Rate')
-    # Show plot in Streamlit
-    st.pyplot(fig,use_container_width=False)
+    plt.xticks(rotation=45)
+    st.pyplot(fig, use_container_width=False)
+
 
 
 
