@@ -385,6 +385,84 @@ with tab1:
     df['Recent_Joiner_Flag'] = (df['Tenure_Years'] < 1).astype(int)
     # Low Rating Flag
     df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
+
+
+
+    with tab2:
+    st.header("🤖 ML Prediction and Model Comparison")
+
+    # Train-Test Split (data already cleaned in Tab1)
+    st.subheader("Train-Test Split")
+    cols_to_drop = ['Unnamed: 0','Driver_ID','MMM-YY','Dateofjoining','LastWorkingDate','year','month','EndDate']
+    df_model = df.drop(columns=cols_to_drop)
+
+    X = df_model.drop(columns=['Churn'])
+    y = df_model['Churn']
+
+    from sklearn.model_selection import train_test_split
+    X_train, X_test, y_train, y_test = train_test_split(
+        X, y, test_size=0.2, stratify=y, random_state=42
+    )
+
+    # ---- Encoding ----
+    from category_encoders import TargetEncoder
+    from sklearn.preprocessing import LabelEncoder
+
+    # Target Encoding for City
+    target_enc = TargetEncoder(cols=['City'])
+    X_train['City'] = target_enc.fit_transform(X_train['City'], y_train)
+    X_test['City'] = target_enc.transform(X_test['City'])
+
+    # Label Encoding for Age_Group
+    le = LabelEncoder()
+    X_train['Age_Group'] = le.fit_transform(X_train['Age_Group'])
+    X_test['Age_Group'] = le.transform(X_test['Age_Group'])
+
+    st.success("✅ Encoding done successfully")
+
+    # ---- Handle Class Imbalance ----
+    from imblearn.over_sampling import SMOTE
+    smote = SMOTE(random_state=42)
+    X_resampled, y_resampled = smote.fit_resample(X_train, y_train)
+    st.write("Class distribution after SMOTE:")
+    st.write(y_resampled.value_counts())
+
+    # ---- Load Pretrained Models ----
+    import joblib
+    rf_final = joblib.load("models/random_forest.pkl")
+    bag_final = joblib.load("models/bagging.pkl")
+    gb_final = joblib.load("models/gb.pkl")
+    xgb_final = joblib.load("models/xgb.pkl")
+    lgb_final = joblib.load("models/lgb.pkl")
+
+    # ---- Predictions ----
+    from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+
+    def evaluate_model(name, model):
+        y_pred = model.predict(X_test)
+        return {
+            "Model": name,
+            "Accuracy": accuracy_score(y_test, y_pred),
+            "Precision": precision_score(y_test, y_pred),
+            "Recall": recall_score(y_test, y_pred),
+            "F1 Score": f1_score(y_test, y_pred)
+        }
+
+    results = []
+    results.append(evaluate_model("Random Forest", rf_final))
+    results.append(evaluate_model("Bagging", bag_final))
+    results.append(evaluate_model("Gradient Boosting", gb_final))
+    results.append(evaluate_model("XGBoost", xgb_final))
+    results.append(evaluate_model("LightGBM", lgb_final))
+
+    results_df = pd.DataFrame(results).sort_values(by="F1 Score", ascending=False).reset_index(drop=True)
+
+    st.subheader("📈 Model Comparison")
+    st.dataframe(results_df)
+
+    best_model = results_df.iloc[0]["Model"]
+    st.success(f"🏆 Best Model Selected: {best_model}")
+
     
 
 
