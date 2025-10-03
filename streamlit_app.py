@@ -297,19 +297,15 @@ with tab1:
     st.pyplot(fig6,use_container_width=False)
 
     st.write("# Checking correlation of columns")
-    # Select only numeric columns for correlation analysis
     numeric_df = df.select_dtypes(include=['number'])
-    # Compute correlation matrix
     corr_matrix = numeric_df.corr()
-    # Create figure
+
     fig, ax = plt.subplots(figsize=(6, 4))
-    # Plot heatmapsns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
-    # Title
+    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
     ax.set_title("Correlation Heatmap")
-    # Layout adjustment
     plt.tight_layout()
-    # Display in Streamlit
-    st.pyplot(fig,use_container_width=False)
+    st.pyplot(fig, use_container_width=False)
+
 
     st.write("""
     The data strongly suggests that employee performance and seniority are the primary drivers of churn. Employees with low 
