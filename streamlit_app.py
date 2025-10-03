@@ -183,7 +183,7 @@ with tab1:
     # Layout adjustment
     plt.tight_layout()
     # Display plot in Streamlit
-    st.pyplot(fig)
+    st.pyplot(fig,use_container_width=False)
 
     st.write("""
     1. Income Pattern Across Age • Income appears to increase with age until around 35–40 years, after which it starts to plateau or slightly
@@ -219,7 +219,7 @@ with tab1:
     # Layout adjustment
     plt.tight_layout()
     # Display plot in Streamlit
-    st.pyplot(fig)
+    st.pyplot(fig,use_container_width=False)
 
     st.write("""
     1. Positive Correlation 
@@ -309,7 +309,7 @@ with tab1:
     # Layout adjustment
     plt.tight_layout()
     # Display in Streamlit
-    st.pyplot(fig)
+    st.pyplot(fig,use_container_width=False)
 
     st.write("""
     The data strongly suggests that employee performance and seniority are the primary drivers of churn. Employees with low 
@@ -395,5 +395,5 @@ with tab1:
     ax.set_xlabel('City')
     ax.set_ylabel('Churn Rate')
     # Show plot in Streamlit
-    st.pyplot(fig)
+    st.pyplot(fig,use_container_width=False)
    
