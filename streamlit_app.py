@@ -364,14 +364,29 @@ with tab1:
         df[col] = df[col].clip(lower, upper)
         return df
 
-
     # Select only numeric columns
     cols = df.select_dtypes(include=['number']).columns
 
     # Apply IQR capping for each numeric column
     for col in cols:
         df = cap_outliers_iqr(df, col)
+        
+    st.header("📊 Continuous Variables Distribution & Skewness")
+    continuous_vars = ['Age', 'Income', 'Total Business Value', 'Tenure_Years']
+    for col in continuous_vars:
+        fig, ax = plt.subplots(figsize=(8, 4))
+        sns.histplot(df[col].dropna(), kde=True, bins=30, ax=ax)
+        ax.set_title(f'{col} | Skewness: {round(df[col].skew(), 2)}')
+        ax.set_xlabel(col)
+        ax.set_ylabel("Frequency")
+        st.pyplot(fig, use_container_width=True)
+    st.write("""Feature Skewness
+    Age 0.42 Mildly right-skewed
+    Income 0.62 Moderately right-skewed
+    Total Business Value 6.97 Highly right-skewed
+    Tenure_Years 1.14 Significantly right-skewed""")
 
+    
     # flage creation
     # High Business Value Driver
     threshold_bv = df['Total Business Value'].quantile(0.90)
@@ -385,6 +400,76 @@ with tab1:
     df['Recent_Joiner_Flag'] = (df['Tenure_Years'] < 1).astype(int)
     # Low Rating Flag
     df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
+
+
+    st.header("📊 City & Age Group Analysis")
+    # ---- Churn Rate by City ----
+    st.subheader("Churn Rate by City")
+    city_churn_rate = df.groupby('City')['Churn'].mean().sort_values(ascending=False)
+    fig, ax = plt.subplots(figsize=(12,6))
+    city_churn_rate.plot(kind='bar', ax=ax)
+    ax.set_ylabel("Churn Rate")
+    ax.set_xlabel("City")
+    ax.set_title("Churn Rate by City")
+    st.pyplot(fig, use_container_width=True)
+
+    # ---- Total Business Value by City ----
+    st.subheader("Total Business Value by City")
+    fig, ax = plt.subplots(figsize=(12,6))
+    sns.boxplot(x='City', y='Total Business Value', data=df, ax=ax)
+    ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+    ax.set_title("Total Business Value by City")
+    st.pyplot(fig, use_container_width=True)
+
+    # ---- Driver Count per City ----
+    st.subheader("Driver Count per City")
+    fig, ax = plt.subplots(figsize=(10,7))
+    df['City'].value_counts().plot(kind='barh', ax=ax)
+    ax.set_xlabel("Number of Drivers")
+    ax.set_ylabel("City")
+    ax.set_title("Driver Count per City")
+    st.pyplot(fig, use_container_width=True)
+
+    # ---- Average Income by City ----
+    st.subheader("Average Income by City")
+    avg_income_city = df.groupby('City')['Income'].mean().sort_values(ascending=False)
+    fig, ax = plt.subplots(figsize=(12,6))
+    avg_income_city.plot(kind='bar', ax=ax)
+    ax.set_ylabel("Average Income")
+    ax.set_xlabel("City")
+    ax.set_title("Average Income by City")
+    st.pyplot(fig, use_container_width=True)
+
+    # ---- Age Group Binning ----
+    st.subheader("Age Group Analysis")
+    bins = [0, 30, 50, df['Age'].max()]
+    labels = ['Young', 'Middle-aged', 'Senior']
+    df['Age_Group'] = pd.cut(df['Age'], bins=bins, labels=labels, include_lowest=True)
+
+    st.write("Distribution of Age Groups:")
+    st.write(df['Age_Group'].value_counts())
+
+    # ---- Churn Rate by Age Group ----
+    st.subheader("Churn Rate by Age Group")
+    age_churn_rate = df.groupby('Age_Group')['Churn'].mean()
+    fig, ax = plt.subplots(figsize=(8,5))
+    age_churn_rate.plot(kind='bar', ax=ax)
+    ax.set_ylabel("Churn Rate")
+    ax.set_xlabel("Age Group")
+    ax.set_title("Churn Rate by Age Group")
+    st.pyplot(fig, use_container_width=True)
+
+    # ---- Average Business Value by Age Group ----
+    st.subheader("Average Business Value by Age Group")
+    age_bv = df.groupby('Age_Group')['Total Business Value'].mean()
+    fig, ax = plt.subplots(figsize=(8,5))
+    age_bv.plot(kind='bar', ax=ax)
+    ax.set_ylabel("Average Business Value")
+    ax.set_xlabel("Age Group")
+    ax.set_title("Average Business Value by Age Group")
+    st.pyplot(fig, use_container_width=True)
+
+
 
 
 with tab2:
