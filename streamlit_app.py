@@ -300,7 +300,7 @@ with tab1:
     numeric_df = df.select_dtypes(include=['number'])
     corr_matrix = numeric_df.corr()
 
-    fig, ax = plt.subplots(figsize=(6, 4))
+    fig, ax = plt.subplots(figsize=(10, 6))
     sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
     ax.set_title("Correlation Heatmap")
     plt.tight_layout()
