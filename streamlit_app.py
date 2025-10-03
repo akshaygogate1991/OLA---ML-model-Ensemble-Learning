@@ -97,7 +97,7 @@ with tab1:
     continuous_cols = ['Age', 'Income', 'Total Business Value']
 
     for col in continuous_cols:
-        fig, ax = plt.subplots(figsize=(4, 2.5))
+        fig, ax = plt.subplots(figsize=(4, 2.5),use_container_width=False)
         sns.histplot(df[col].dropna(), kde=True, ax=ax)
         ax.set_title(f'Distribution of {col}')
         ax.set_xlabel(col)
@@ -108,7 +108,7 @@ with tab1:
     categorical_cols = ['Gender', 'City', 'Education_Level', 'Joining Designation', 'Grade', 'Quarterly Rating']
 
     for col in categorical_cols:
-        fig, ax = plt.subplots(figsize=(4, 2.5))
+        fig, ax = plt.subplots(figsize=(4, 2.5),use_container_width=False)
         sns.countplot(data=df, x=col, order=df[col].value_counts().index, ax=ax)
         ax.set_title(f'Countplot of {col}')
         ax.set_xlabel(col)
