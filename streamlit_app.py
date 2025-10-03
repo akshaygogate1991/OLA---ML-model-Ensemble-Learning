@@ -357,15 +357,16 @@ with tab1:
     missing_summary = df.isnull().sum()
     missing_summary = missing_summary[missing_summary > 0].sort_values(ascending=False)
 
-    # checking by IQR method
+  # Checking by IQR method
     def cap_outliers_iqr(df, col):
-    Q1 = df[col].quantile(0.25)
-    Q3 = df[col].quantile(0.75)
-    IQR = Q3 - Q1
-    lower = Q1 - 1.5 * IQR
-    upper = Q3 + 1.5 * IQR
-    df[col] = df[col].clip(lower, upper)
-    return df
+        Q1 = df[col].quantile(0.25)
+        Q3 = df[col].quantile(0.75)
+        IQR = Q3 - Q1
+        lower = Q1 - 1.5 * IQR
+        upper = Q3 + 1.5 * IQR
+        df[col] = df[col].clip(lower, upper)
+        return df
+
 
     for col in cols:
         df = cap_outliers_iqr(df, col)
