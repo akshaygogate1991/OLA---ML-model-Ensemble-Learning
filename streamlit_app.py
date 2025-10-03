@@ -5,6 +5,18 @@ import seaborn as sns
 import joblib
 import xgboost as xgb
 
+# Example: reduce column widths
+styled_df = driver_summary.style.set_table_styles(
+    [
+        {"selector": "th", "props": [("min-width", "80px"), ("max-width", "120px")]},
+        {"selector": "td", "props": [("min-width", "80px"), ("max-width", "120px")]}
+    ]
+)
+st.write(styled_df)
+
+
+
+
 st.set_page_config(page_title="Ola Driver Churn Dashboard 🚖", layout="wide")
 
 # Title
