@@ -385,27 +385,7 @@ with tab1:
     # Low Rating Flag
     df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
     
-    st.write("# Churn Rate by City")
 
-    # Drop NA values in City
-    df_city = df.dropna(subset=['City'])
-
-    # Make sure Churn column is int (0/1)
-    df_city['Churn'] = df_city['Churn'].astype(int)
-
-    # Group and calculate churn rate
-    city_churn_rate = df_city.groupby('City')['Churn'].mean().sort_values(ascending=False)
-
-    st.write(city_churn_rate.head())  # Debug print
-
-    # Plot
-    fig, ax = plt.subplots(figsize=(8, 4))
-    city_churn_rate.plot(kind='bar', ax=ax, color='skyblue')
-    ax.set_title('Churn Rate by City')
-    ax.set_xlabel('City')
-    ax.set_ylabel('Churn Rate')
-    plt.xticks(rotation=45)
-    st.pyplot(fig, use_container_width=False)
 
 
 
