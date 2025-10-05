@@ -407,10 +407,11 @@ with tab1:
     st.subheader("Churn Rate by City")
     city_churn_rate = df.groupby('City')['Churn'].mean().sort_values(ascending=False)
     fig, ax = plt.subplots(figsize=(12,6))
-    city_churn_rate.plot(kind='bar', ax=ax)
+    city_churn_rate.plot(kind='bar', ax=ax, color='skyblue', edgecolor='black')
     ax.set_ylabel("Churn Rate")
     ax.set_xlabel("City")
     ax.set_title("Churn Rate by City")
+    plt.xticks(rotation=90)
     st.pyplot(fig, use_container_width=True)
 
     # ---- Total Business Value by City ----
@@ -448,16 +449,17 @@ with tab1:
 
     st.write("Distribution of Age Groups:")
     st.write(df['Age_Group'].value_counts())
-
+    
     # ---- Churn Rate by Age Group ----
     st.subheader("Churn Rate by Age Group")
-    age_churn_rate = df.groupby('Age_Group')['Churn'].mean()
-    fig, ax = plt.subplots(figsize=(8,5))
-    age_churn_rate.plot(kind='bar', ax=ax)
-    ax.set_ylabel("Churn Rate")
-    ax.set_xlabel("Age Group")
-    ax.set_title("Churn Rate by Age Group")
-    st.pyplot(fig, use_container_width=True)
+    age_churn_rate = df.groupby('Age_Group', observed=False)['Churn'].mean().sort_values(ascending=False)
+
+    fig2, ax2 = plt.subplots(figsize=(8,5))
+    age_churn_rate.plot(kind='bar', ax=ax2, color='lightcoral', edgecolor='black')
+    ax2.set_ylabel("Churn Rate")
+    ax2.set_xlabel("Age Group")
+    ax2.set_title("Churn Rate by Age Group")
+    st.pyplot(fig2, use_container_width=True)
 
     # ---- Average Business Value by Age Group ----
     st.subheader("Average Business Value by Age Group")
