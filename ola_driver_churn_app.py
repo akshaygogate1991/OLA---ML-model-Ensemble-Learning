@@ -1,3 +1,9 @@
+
+git mv streamlit_app.py ola_driver_churn_app.py
+git commit -m "Renamed Streamlit app file for clarity"
+git push
+
+
 import streamlit as st
 import pandas as pd
 import numpy as np
