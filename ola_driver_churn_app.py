@@ -16,13 +16,10 @@ st.set_page_config(page_title="Ola Driver Churn Dashboard 🚖", layout="wide")
 st.title("🚖 Ola Driver Churn Prediction Dashboard")
 
 # ----------------------------- FILE UPLOAD -----------------------------
-uploaded_file = st.file_uploader("📂 Upload your Ola Driver Dataset (CSV)", type=["csv"])
-if uploaded_file is not None:
-    df = pd.read_csv(uploaded_file)
-    st.success("✅ File uploaded successfully!")
-else:
-    st.warning("⚠️ Please upload the Ola driver dataset CSV to continue.")
-    st.stop()
+csv_url = "https://drive.google.com/uc?export=download&id=1nJUXLm74povU26gll0_LY5ur1FX9QZPH"
+
+df = pd.read_csv(csv_url)
+
 
 # ----------------------------- CHURN CHECK -----------------------------
 # Ensure 'Churn' column exists before proceeding
