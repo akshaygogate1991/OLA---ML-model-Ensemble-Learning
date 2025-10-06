@@ -1,5 +1,3 @@
-
-
 import streamlit as st
 import pandas as pd
 import numpy as np
@@ -61,6 +59,14 @@ with tab1:
         st.pyplot(fig)
 
     st.info("✅ Key Findings:\n- Younger and lower-rated drivers churn more.\n- Income & TBV are right-skewed.\n- Cities show differing churn patterns.")
+        # Ensure 'Churn' column exists
+    if 'Churn' not in df.columns:
+        st.warning("⚠️ 'Churn' column not found! Creating one based on LastWorkingDate...")
+        if 'LastWorkingDate' in df.columns:
+            df['Churn'] = df['LastWorkingDate'].notnull().astype(int)
+        else:
+            st.error("❌ Cannot derive 'Churn' column. Please upload a dataset containing churn labels.")
+            st.stop()
 
 # ----------------------------- TAB 2: ML MODEL -----------------------------
 with tab2:
