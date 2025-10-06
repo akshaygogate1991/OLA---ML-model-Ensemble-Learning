@@ -15,34 +15,46 @@ st.set_page_config(page_title="Ola Driver Churn Dashboard 🚖", layout="wide")
 
 st.title("🚖 Ola Driver Churn Prediction Dashboard")
 
-# ----------------------------- FILE UPLOAD -----------------------------
-csv_url = "https://drive.google.com/uc?export=download&id=1nJUXLm74povU26gll0_LY5ur1FX9QZPH"
+# ----------------------------- LOAD DATA FROM GOOGLE SHEETS -----------------------------
+st.info("📂 Loading dataset directly from Google Sheets...")
 
-df = pd.read_csv(csv_url)
+# Google Sheet ID (from your link)
+sheet_id = "1tZgqv4JIsIL_orhMGsjvYak8yubM50GiA1P45TWJ_fs"
 
+# Sheet name (bottom tab name)
+sheet_name = "Sheet1"  # change if renamed
 
-# ----------------------------- CHURN CHECK -----------------------------
-# Ensure 'Churn' column exists before proceeding
+# Construct CSV export link
+sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+
+try:
+    df = pd.read_csv(sheet_url)
+    st.success(f"✅ Data loaded successfully! Shape: {df.shape}")
+    st.write("### Preview of Data:")
+    st.dataframe(df.head())
+except Exception as e:
+    st.error(f"❌ Failed to load dataset: {e}")
+    st.stop()
+
+# ----------------------------- CHURN COLUMN CHECK -----------------------------
 if 'Churn' not in df.columns:
-    st.warning("⚠️ 'Churn' column not found! Creating one based on LastWorkingDate...")
+    st.warning("⚠️ 'Churn' column not found — creating one based on LastWorkingDate...")
     if 'LastWorkingDate' in df.columns:
         df['Churn'] = df['LastWorkingDate'].notnull().astype(int)
+        st.success("✅ Created 'Churn' column successfully.")
     else:
-        st.error("❌ Cannot derive 'Churn' column. Please upload a dataset containing churn labels.")
+        st.error("❌ Cannot derive 'Churn' column. Please include it or add 'LastWorkingDate'.")
         st.stop()
 
-# ----------------------------- TABS -----------------------------
+# ----------------------------- CREATE TABS -----------------------------
 tab1, tab2, tab3 = st.tabs(["📊 EDA", "🤖 ML Model & Prediction", "💡 Insights"])
 
 # ----------------------------- TAB 1: EDA -----------------------------
 with tab1:
     st.header("Exploratory Data Analysis (EDA)")
-    st.dataframe(df.head(10))
     st.write(f"**Dataset shape:** {df.shape}")
-    st.write("### Data Info:")
-    buffer = []
-    df.info(buf=buffer)
-    st.text('\n'.join(buffer))
+    st.write("### Data Overview")
+    st.dataframe(df.describe(include='all'))
 
     # Correlation Heatmap
     st.subheader("Correlation Heatmap")
@@ -56,7 +68,7 @@ with tab1:
     else:
         st.warning("⚠️ No numeric columns found for correlation heatmap.")
 
-    # Continuous variable distribution
+    # Continuous Variable Distribution
     st.subheader("Continuous Variable Distribution")
     cont_cols = [c for c in ['Age', 'Income', 'Total Business Value'] if c in df.columns]
     for col in cont_cols:
@@ -65,7 +77,7 @@ with tab1:
         ax.set_title(f"Distribution of {col}")
         st.pyplot(fig)
 
-    # Categorical variable distribution
+    # Categorical Variable Distribution
     st.subheader("Categorical Variable Distribution")
     cat_cols = [c for c in ['Gender', 'City', 'Education_Level', 'Grade', 'Quarterly Rating'] if c in df.columns]
     for col in cat_cols:
@@ -74,15 +86,20 @@ with tab1:
         plt.xticks(rotation=45)
         st.pyplot(fig)
 
-    st.info("✅ Key Findings:\n- Younger and lower-rated drivers churn more.\n- Income & TBV are right-skewed.\n- Cities show differing churn patterns.")
+    st.info("""
+    ✅ **Key Findings:**
+    - Younger and lower-rated drivers churn more.  
+    - Income & TBV are right-skewed.  
+    - City-wise churn distribution varies significantly.
+    """)
 
 # ----------------------------- TAB 2: MODEL -----------------------------
 with tab2:
     st.header("Machine Learning Model (XGBoost) & Predictions")
 
     st.markdown("""
-    The model was trained using multiple ensemble techniques — Random Forest, Bagging, Gradient Boosting, LightGBM, and XGBoost.
-    Based on F1-score and recall performance, **XGBoost** emerged as the best model.
+    The model was trained using multiple ensemble techniques — Random Forest, Bagging, Gradient Boosting, LightGBM, and XGBoost.  
+    Based on F1-score and recall, **XGBoost** emerged as the best model.
     """)
 
     results_data = {
@@ -110,8 +127,6 @@ with tab2:
 
     # Input Form
     st.subheader("🔮 Predict Driver Churn")
-    st.write("Provide input details below to check if a driver is likely to churn:")
-
     age = st.number_input("Driver Age", min_value=18, max_value=65, value=35)
     income = st.number_input("Monthly Income (₹)", min_value=10000, max_value=200000, value=60000)
     rating = st.slider("Quarterly Rating", 1, 5, 3)
@@ -131,29 +146,22 @@ with tab2:
 
 # ----------------------------- TAB 3: INSIGHTS -----------------------------
 with tab3:
-    st.header("Business Insights 💡")
+    st.header("💡 Business Insights")
     st.markdown("""
     ### Key Insights from Analysis:
-    1. **Performance & Grade are top churn indicators.**
-       - Low-rated and low-grade drivers have highest churn.
-       - High-performing drivers (higher TBV & Rating) tend to stay longer.
-
-    2. **Demographics play minor role:**
-       - Gender and Age have minimal correlation with churn.
-       - Younger drivers (30–34) form bulk of attrition.
-
-    3. **Tenure & Business Value:**
-       - Drivers with tenure < 1 year and low TBV are 3x more likely to churn.
-       - Incentivizing drivers early may reduce attrition.
-
-    4. **City-level Variation:**
-       - Churn is concentrated in select high-load cities (C20, C26, C29).
-       - Target retention campaigns regionally.
+    1. **Performance & Grade** are the strongest churn indicators.  
+       - Low-rated and low-grade drivers are most likely to churn.
+    2. **Demographics** have minimal impact (Gender, Age).  
+       - Majority of churners are aged 30–34.
+    3. **Tenure & Business Value:**  
+       - Drivers with < 1 year tenure and low TBV are 3× more likely to churn.
+    4. **City Variation:**  
+       - Highest churn observed in C20, C26, and C29.
 
     ---
     🧩 **Business Actionables**
-    - Introduce early career bonuses and fast-track promotions.
-    - Identify low-rating drivers proactively and offer training.
-    - Leverage XGBoost churn model in HR dashboards for retention tracking.
+    - Offer fast-track promotions & retention bonuses for early-career drivers.  
+    - Provide training for low-rating drivers.  
+    - Use this model to flag high-churn-risk drivers early.
     """)
-    st.info("🎯 Insight Summary: Data-driven retention can reduce churn by up to 20%.")
+    st.info("🎯 Data-driven retention strategies can reduce churn by up to **20%**.")
