@@ -507,11 +507,17 @@ with tab1:
     continuous_vars = ['Age', 'Income', 'Total Business Value', 'Tenure_Years']
 
     col1, col2 = st.columns(2)
-    for i, col in enumerate(continuous_vars):
-        fig, ax = plt.subplots(figsize=(5, 3))
-        sns.histplot(df[col], kde=True, bins=30, ax=ax)
-        ax.set_title(f"{col} | Skewness: {round(df[col].skew(), 2)}")
-        st.pyplot(fig, use_container_width=True)
+    for col in continuous_vars:
+        if col in df.columns:
+            fig, ax = plt.subplots(figsize=(5, 3))
+            sns.histplot(df[col].dropna(), kde=True, bins=30, ax=ax)
+            ax.set_title(f"{col} | Skewness: {round(df[col].skew(), 2)}")
+            ax.set_xlabel(col)
+            ax.set_ylabel("Frequency")
+            st.pyplot(fig, use_container_width=True)
+        else:
+            st.warning(f"⚠️ Column '{col}' not found in dataset. Skipping...")
+
 
     st.info("""
     📈 **Feature Skewness Summary:**
