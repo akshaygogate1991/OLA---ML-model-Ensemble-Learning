@@ -542,45 +542,19 @@ with tab1:
     # 6️⃣ Flag Feature Creation
     # =============================
     st.subheader("🚩 Feature Engineering — Driver Flags")
-
-    # 🧩 Check for required columns before proceeding
-    required_cols = ['Total Business Value', 'Income', 'Tenure_Years', 'Age', 'Quarterly Rating']
-    missing_cols = [col for col in required_cols if col not in df.columns]
-
-    if missing_cols:
-        st.error(f"❌ Missing columns for flag creation: {missing_cols}")
-        st.stop()
-    else:
-        # Calculate thresholds safely
-        threshold_bv = df['Total Business Value'].quantile(0.90)
-        threshold_income = df['Income'].quantile(0.10)
-
-    # Create flags
+    # High Business values Driver
+    threshold_bv=df['Total Business Value'].quantile(0.9)
     df['High_Business_Value_Flag'] = (df['Total Business Value'] >= threshold_bv).astype(int)
+    # Low Income Driver
+    threshold_income = df['Income'].quantile(0.10)
     df['Low_Income_Flag'] = (df['Income'] <= threshold_income).astype(int)
-    df['Recent_Joiner_Flag'] = (df['Tenure_Years'] < 1).astype(int)
+    # Senior Age Group Flag
     df['Senior_Driver_Flag'] = (df['Age'] > 50).astype(int)
+    # Recent Joiner Flag
+    df['Recent_Joiner_Flag'] = (df['Tenure_Years'] < 1).astype(int)
+    # Low Rating Flag
     df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
-
-    # Display preview with style
-    st.dataframe(
-        df[['High_Business_Value_Flag', 'Low_Income_Flag', 'Senior_Driver_Flag',
-            'Recent_Joiner_Flag', 'Low_Rating_Flag']].head(10).style.background_gradient(cmap='Blues'),
-        use_container_width=True
-    )
-
-    st.success("""
-    🚩 **Flag Variables Added Successfully:**
-    - High Business Value Driver  
-    - Low Income Driver  
-    - Senior Driver  
-    - Recent Joiner  
-    - Low Rating Driver  
-
-    These engineered flags capture behavioral traits linked to churn risk.
-    """)
-
-
+    
     st.success("""
     🚩 **Flag Variables Added Successfully:**
     - High Business Value Driver  
