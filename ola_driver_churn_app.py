@@ -114,9 +114,11 @@ with tab2:
 
     # Load or train model
     try:
-        model = joblib.load("xgb_best_model.pkl")
+        model = joblib.load("models/xgboost_final_model.pkl")
+        st.success("✅ Pre-trained XGBoost model loaded successfully!")
     except:
-        st.warning("No saved model found. Training XGBoost model now...")
+        st.error("❌ Model file not found. Please upload 'xgboost_final_model.pkl' to /models folder.")
+        st.stop()
         df = df.dropna(subset=['Churn'])
         X = df.select_dtypes(include=['number']).drop(columns=['Churn'])
         y = df['Churn']
