@@ -23,7 +23,6 @@ sheet_id = "1tZgqv4JIsIL_orhMGsjvYak8yubM50GiA1P45TWJ_fs"
 
 # Sheet name (bottom tab name)
 sheet_name = "Sheet1"  # change if renamed
-
 # Construct CSV export link
 sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
 
