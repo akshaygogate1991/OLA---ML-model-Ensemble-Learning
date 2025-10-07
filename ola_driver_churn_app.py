@@ -550,7 +550,7 @@ with tab1:
     df['Low_Income_Flag'] = (df['Income'] <= threshold_income).astype(int)
 
     df['Senior_Driver_Flag'] = (df['Age'] > 50).astype(int)
-    df['Recent_Joiner_Flag'] = (df['Tenure_Years'] < 1).astype(int)
+
     df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
 
     st.dataframe(
