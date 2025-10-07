@@ -150,22 +150,20 @@ with tab1:
         st.bar_chart(churn_age.set_index('Age'))
 
     st.info("🧓 Most churn occurs in age group **30–34 years** — likely mid-career transitions.")
-    # =============================
+  # =============================
     # 🔍 DATA OVERVIEW SECTION
     # =============================
     st.markdown("### 🧾 DataFrame Summary")
-    # Display basic stats
-    st.write("**Shape:**", df.shape)
-    st.write("**Columns:**", df.columns.tolist())
 
-    import io
+    # Show basic shape
+    rows, cols = df.shape
+    st.metric(label="📊 Total Records", value=f"{rows:,}")
+    st.metric(label="🧩 Total Columns", value=f"{cols}")
 
-    # Create a string buffer
-    buffer = io.StringIO()
-    df.info(buf=buffer)
-    info_str = buffer.getvalue()
+    # Optional: Show column names neatly
+    with st.expander("📋 View Column Names"):
+        st.write(df.columns.tolist())
 
-    st.text(info_str)
 
     # =============================
     # 5️⃣ DISTRIBUTION INSIGHTS
