@@ -513,6 +513,9 @@ with tab1:
     # 5️⃣ Skewness Check (Feature Normality)
     # =============================
     st.subheader("📊 Skewness of Continuous Variables")
+    st.write("📋 Available Columns in DataFrame:")
+    st.write(df.columns.tolist())
+
 
     continuous_vars = ['Age', 'Income', 'Total Business Value', 'Tenure_Years']
 
