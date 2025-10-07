@@ -545,6 +545,40 @@ with tab1:
     # 6️⃣ Flag Feature Creation
     # =============================
 
+    st.subheader("🚩 Feature Engineering — Driver Flags")
+
+    # Ensure Tenure_Years exists in df
+    if 'Tenure_Years' not in df.columns:
+        st.warning("⚠️ 'Tenure_Years' not found. Recomputing it...")
+        df['EndDate'] = df['LastWorkingDate'].fillna(df['MMM-YY'])
+        df['Tenure_Years'] = (df['EndDate'] - df['Dateofjoining']).dt.days / 365
+        df['Tenure_Years'] = df['Tenure_Years'].fillna(0)
+        st.success("✅ Recomputed 'Tenure_Years' column successfully!")
+
+    # Proceed with flag creation safely
+    try:
+        threshold_bv = df['Total Business Value'].quantile(0.90)
+        df['High_Business_Value_Flag'] = (df['Total Business Value'] >= threshold_bv).astype(int)
+
+        threshold_income = df['Income'].quantile(0.10)
+        df['Low_Income_Flag'] = (df['Income'] <= threshold_income).astype(int)
+
+        df['Recent_Joiner_Flag'] = (df['Tenure_Years'] < 1).astype(int)
+        df['Senior_Driver_Flag'] = (df['Age'] > 50).astype(int)
+        df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
+
+        st.dataframe(
+            df[['High_Business_Value_Flag', 'Low_Income_Flag', 'Senior_Driver_Flag',
+                'Recent_Joiner_Flag', 'Low_Rating_Flag']].head(10),
+            use_container_width=True
+        )
+
+        st.success("✅ All feature flags created successfully!")
+
+    except Exception as e:
+        st.error(f"❌ Error while creating flags: {e}")
+        st.write("Columns present:", df.columns.tolist())
+
 
     # =============================
     # 7️⃣ City & Age Group Analysis
