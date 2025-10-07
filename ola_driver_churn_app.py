@@ -540,45 +540,62 @@ with tab1:
     - **Tenure_Years:** 1.14 → Significantly right-skewed  
     👉 Consider log or power transformations for highly skewed features before training.
     """)
-
     # =============================
     # 6️⃣ Flag Feature Creation
     # =============================
-
     st.subheader("🚩 Feature Engineering — Driver Flags")
 
-    # Ensure Tenure_Years exists in df
-    if 'Tenure_Years' not in df.columns:
-        st.warning("⚠️ 'Tenure_Years' not found. Recomputing it...")
-        df['EndDate'] = df['LastWorkingDate'].fillna(df['MMM-YY'])
-        df['Tenure_Years'] = (df['EndDate'] - df['Dateofjoining']).dt.days / 365
-        df['Tenure_Years'] = df['Tenure_Years'].fillna(0)
-        st.success("✅ Recomputed 'Tenure_Years' column successfully!")
+    # 🔍 Debug: Check columns before creating flags
+    st.write("✅ Columns before flag creation:", df.columns.tolist())
 
-    # Proceed with flag creation safely
+    # Step 1️⃣ — Always recompute Tenure_Years safely
+    try:
+        if 'Tenure_Years' not in df.columns or df['Tenure_Years'].isnull().all():
+            st.warning("⚠️ 'Tenure_Years' missing or empty — recalculating it.")
+            df['EndDate'] = df['LastWorkingDate'].fillna(df['MMM-YY'])
+            df['Tenure_Years'] = (df['EndDate'] - df['Dateofjoining']).dt.days / 365
+            df['Tenure_Years'] = df['Tenure_Years'].fillna(0)
+        else:
+            st.success("✅ 'Tenure_Years' already available.")
+    except Exception as e:
+        st.error(f"❌ Error while checking 'Tenure_Years': {e}")
+        st.stop()
+
+    # Step 2️⃣ — Confirm presence before proceeding
+    if 'Tenure_Years' not in df.columns:
+        st.error("❌ 'Tenure_Years' still missing — stopping execution.")
+        st.write("Available columns:", df.columns.tolist())
+        st.stop()
+
+    # Step 3️⃣ — Create flag features safely
     try:
         threshold_bv = df['Total Business Value'].quantile(0.90)
-        df['High_Business_Value_Flag'] = (df['Total Business Value'] >= threshold_bv).astype(int)
-
         threshold_income = df['Income'].quantile(0.10)
-        df['Low_Income_Flag'] = (df['Income'] <= threshold_income).astype(int)
 
+        df['High_Business_Value_Flag'] = (df['Total Business Value'] >= threshold_bv).astype(int)
+        df['Low_Income_Flag'] = (df['Income'] <= threshold_income).astype(int)
         df['Recent_Joiner_Flag'] = (df['Tenure_Years'] < 1).astype(int)
         df['Senior_Driver_Flag'] = (df['Age'] > 50).astype(int)
         df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
 
         st.dataframe(
-            df[['High_Business_Value_Flag', 'Low_Income_Flag', 'Senior_Driver_Flag',
-                'Recent_Joiner_Flag', 'Low_Rating_Flag']].head(10),
+            df[['High_Business_Value_Flag', 'Low_Income_Flag',
+                'Senior_Driver_Flag', 'Recent_Joiner_Flag',
+                'Low_Rating_Flag']].head(10),
             use_container_width=True
         )
 
         st.success("✅ All feature flags created successfully!")
 
+    except KeyError as e:
+        st.error(f"❌ Missing column during flag creation: {e}")
+        st.write("Available columns:", df.columns.tolist())
     except Exception as e:
-        st.error(f"❌ Error while creating flags: {e}")
-        st.write("Columns present:", df.columns.tolist())
+        st.error(f"❌ Unexpected error during flag creation: {e}")
+        st.write("Available columns:", df.columns.tolist())
 
+    st.write("✅ Final columns after flag creation:", df.columns.tolist())
+    st.write("🧾 Sample rows:", df[['Tenure_Years']].head())
 
     # =============================
     # 7️⃣ City & Age Group Analysis
