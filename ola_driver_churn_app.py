@@ -199,182 +199,182 @@ with tab1:
     st.success("📌 Key Insight: Quarterly Rating & Grade are strongest churn indicators.")
 
     # =============================
-# 8️⃣ BIVARIATE ANALYSIS SECTION
-# =============================
+    # 8️⃣ BIVARIATE ANALYSIS SECTION
+    # =============================
 
-st.markdown("---")
-st.header("🔍 Bivariate Analysis — Relationship Between Key Variables")
+    st.markdown("---")
+    st.header("🔍 Bivariate Analysis — Relationship Between Key Variables")
 
-st.markdown("""
-This section explores how two variables relate to each other.  
-We analyze **age vs income**, **grade vs income**, and **performance vs churn**, revealing behavioral and financial churn trends.
-""")
+    st.markdown("""
+    This section explores how two variables relate to each other.  
+    We analyze **age vs income**, **grade vs income**, and **performance vs churn**, revealing behavioral and financial churn trends.
+    """)
 
-# =============================
-# 📈 1. AGE vs INCOME (Scatter Plot)
-# =============================
-st.subheader("📉 Age vs Income Distribution")
+    # =============================
+    # 📈 1. AGE vs INCOME (Scatter Plot)
+    # =============================
+    st.subheader("📉 Age vs Income Distribution")
 
-fig, ax = plt.subplots(figsize=(6, 4))
-sns.scatterplot(data=df, x='Age', y='Income', alpha=0.6, color='royalblue', edgecolor='white')
-ax.set_title("Age vs Income", fontsize=12)
-ax.set_xlabel("Driver Age")
-ax.set_ylabel("Monthly Income (₹)")
-st.pyplot(fig, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.scatterplot(data=df, x='Age', y='Income', alpha=0.6, color='royalblue', edgecolor='white')
+    ax.set_title("Age vs Income", fontsize=12)
+    ax.set_xlabel("Driver Age")
+    ax.set_ylabel("Monthly Income (₹)")
+    st.pyplot(fig, use_container_width=True)
 
-st.info("""
-🧭 **Insights**
-- Income rises with age until ~40 years, then slightly flattens.  
-- Core earning segment: **Ages 28–40**, incomes ₹40K–₹100K.  
-- Older drivers (>45) earn less on average — possible early retirement or reduced engagement.
-""")
+    st.info("""
+    🧭 **Insights**
+    - Income rises with age until ~40 years, then slightly flattens.  
+    - Core earning segment: **Ages 28–40**, incomes ₹40K–₹100K.  
+    - Older drivers (>45) earn less on average — possible early retirement or reduced engagement.
+    """)
 
-# =============================
-# 📊 2. GRADE vs INCOME (Boxplot)
-# =============================
-st.subheader("💼 Income Distribution by Grade")
+    # =============================
+    # 📊 2. GRADE vs INCOME (Boxplot)
+    # =============================
+    st.subheader("💼 Income Distribution by Grade")
 
-fig, ax = plt.subplots(figsize=(6, 4))
-sns.boxplot(data=df, x='Grade', y='Income', palette='Blues', ax=ax)
-ax.set_title("Income by Grade")
-ax.set_xlabel("Grade")
-ax.set_ylabel("Income (₹)")
-st.pyplot(fig, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.boxplot(data=df, x='Grade', y='Income', palette='Blues', ax=ax)
+    ax.set_title("Income by Grade")
+    ax.set_xlabel("Grade")
+    ax.set_ylabel("Income (₹)")
+    st.pyplot(fig, use_container_width=True)
 
-st.info("""
-💡 **Key Observations**
-- Median income **increases sharply** with grade.  
-- Grade 1 median ≈ ₹40K → Grade 5 median ≈ ₹135K+.  
-- Higher grades show greater variance — likely due to performance-based pay.  
-- Suggests **Grade is a strong churn predictor**.
-""")
+    st.info("""
+    💡 **Key Observations**
+    - Median income **increases sharply** with grade.  
+    - Grade 1 median ≈ ₹40K → Grade 5 median ≈ ₹135K+.  
+    - Higher grades show greater variance — likely due to performance-based pay.  
+    - Suggests **Grade is a strong churn predictor**.
+    """)
 
-# =============================
-# ⚖️ 3. GRADE vs CHURN (Stacked Bar Chart)
-# =============================
-st.subheader("📊 Churn Rate by Grade")
+    # =============================
+    # ⚖️ 3. GRADE vs CHURN (Stacked Bar Chart)
+    # =============================
+    st.subheader("📊 Churn Rate by Grade")
 
-fig, ax = plt.subplots(figsize=(6, 4))
-pd.crosstab(df['Grade'], df['Churn'], normalize='index').plot(
+    fig, ax = plt.subplots(figsize=(6, 4))
+    pd.crosstab(df['Grade'], df['Churn'], normalize='index').plot(
     kind='bar', stacked=True, colormap='coolwarm', ax=ax
-)
-ax.set_title("Churn Rate by Grade")
-ax.set_xlabel("Grade")
-ax.set_ylabel("Proportion")
-ax.legend(title='Churn', labels=['Active (0)', 'Left (1)'])
-st.pyplot(fig, use_container_width=True)
+    )
+    ax.set_title("Churn Rate by Grade")
+    ax.set_xlabel("Grade")
+    ax.set_ylabel("Proportion")
+    ax.legend(title='Churn', labels=['Active (0)', 'Left (1)'])
+    st.pyplot(fig, use_container_width=True)
 
-st.success("""
-📈 **Interpretation**
-- Lower-grade drivers (Grade 1 & 2) show **highest churn rates**.  
-- Churn declines steadily in higher grades → likely due to job stability & loyalty.  
-- Suggests churn prevention via **promotion pathways** or performance-linked incentives.
-""")
+    st.success("""
+    📈 **Interpretation**
+    - Lower-grade drivers (Grade 1 & 2) show **highest churn rates**.  
+    - Churn declines steadily in higher grades → likely due to job stability & loyalty.  
+    - Suggests churn prevention via **promotion pathways** or performance-linked incentives.
+    """)
 
-# =============================
-# 🚻 4. GENDER vs CHURN
-# =============================
-st.subheader("🚻 Churn by Gender")
+    # =============================
+    # 🚻 4. GENDER vs CHURN
+    # =============================
+    st.subheader("🚻 Churn by Gender")
 
-fig, ax = plt.subplots(figsize=(5, 3))
-pd.crosstab(df['Gender'], df['Churn'], normalize='index').plot(
-    kind='bar', stacked=True, colormap='viridis', ax=ax
-)
-ax.set_title("Churn by Gender")
-ax.set_xlabel("Gender")
-ax.set_ylabel("Proportion")
-ax.legend(title='Churn', labels=['Active (0)', 'Left (1)'])
-st.pyplot(fig, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(5, 3))
+    pd.crosstab(df['Gender'], df['Churn'], normalize='index').plot(
+        kind='bar', stacked=True, colormap='viridis', ax=ax
+        )
+    ax.set_title("Churn by Gender")
+    ax.set_xlabel("Gender")
+    ax.set_ylabel("Proportion")
+    ax.legend(title='Churn', labels=['Active (0)', 'Left (1)'])
+    st.pyplot(fig, use_container_width=True)
 
-st.info("""
-👫 **Insight:** Churn proportion is nearly identical across genders —  
-no significant attrition bias observed.
-""")
+    st.info("""
+    👫 **Insight:** Churn proportion is nearly identical across genders —  
+    no significant attrition bias observed.
+    """)
 
-# =============================
-# 💰 5. INCOME vs CHURN (Boxplot)
-# =============================
-st.subheader("💰 Income by Churn Status")
+    # =============================
+    # 💰 5. INCOME vs CHURN (Boxplot)
+    # =============================
+    st.subheader("💰 Income by Churn Status")
 
-fig, ax = plt.subplots(figsize=(6, 4))
-sns.boxplot(data=df, x='Churn', y='Income', palette='pastel', ax=ax)
-ax.set_title("Income vs Churn Status")
-ax.set_xticklabels(['Active', 'Left'])
-ax.set_xlabel("Churn Status")
-ax.set_ylabel("Monthly Income (₹)")
-st.pyplot(fig, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.boxplot(data=df, x='Churn', y='Income', palette='pastel', ax=ax)
+    ax.set_title("Income vs Churn Status")
+    ax.set_xticklabels(['Active', 'Left'])
+    ax.set_xlabel("Churn Status")
+    ax.set_ylabel("Monthly Income (₹)")
+    st.pyplot(fig, use_container_width=True)
 
-st.info("""
-💸 **Key Insight:** Drivers who left tend to have **slightly lower median incomes**.  
-However, overlap is large → income alone isn't a dominant churn factor.
-""")
+    st.info("""
+    💸 **Key Insight:** Drivers who left tend to have **slightly lower median incomes**.  
+    However, overlap is large → income alone isn't a dominant churn factor.
+    """)
 
-# =============================
-# ⭐ 6. QUARTERLY RATING vs CHURN (Boxplot)
-# =============================
-st.subheader("⭐ Quarterly Rating by Churn Status")
+    # =============================
+    # ⭐ 6. QUARTERLY RATING vs CHURN (Boxplot)
+    # =============================
+    st.subheader("⭐ Quarterly Rating by Churn Status")
 
-fig, ax = plt.subplots(figsize=(6, 4))
-sns.boxplot(data=df, x='Churn', y='Quarterly Rating', palette='Set2', ax=ax)
-ax.set_title("Quarterly Rating vs Churn")
-ax.set_xticklabels(['Active', 'Left'])
-st.pyplot(fig, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.boxplot(data=df, x='Churn', y='Quarterly Rating', palette='Set2', ax=ax)
+    ax.set_title("Quarterly Rating vs Churn")
+    ax.set_xticklabels(['Active', 'Left'])
+    st.pyplot(fig, use_container_width=True)
 
-st.success("""
-🌟 **Strong Insight:**  
-Low-rated drivers churn significantly more — consistent with poor performance impact.  
-Supports **Quarterly Rating** as a top predictor in churn modeling.
-""")
+    st.success("""
+    🌟 **Strong Insight:**  
+    Low-rated drivers churn significantly more — consistent with poor performance impact.  
+    Supports **Quarterly Rating** as a top predictor in churn modeling.
+    """)
 
-# =============================
-# 🧓 7. AGE vs CHURN (Boxplot)
-# =============================
-st.subheader("🧓 Age vs Churn Status")
+    # =============================
+    # 🧓 7. AGE vs CHURN (Boxplot)
+    # =============================
+    st.subheader("🧓 Age vs Churn Status")
 
-fig, ax = plt.subplots(figsize=(6, 4))
-sns.boxplot(data=df, x='Churn', y='Age', ax=ax, palette='cool')
-ax.set_title("Age vs Churn Status")
-ax.set_xticklabels(['Active', 'Left'])
-st.pyplot(fig, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.boxplot(data=df, x='Churn', y='Age', ax=ax, palette='cool')
+    ax.set_title("Age vs Churn Status")
+    ax.set_xticklabels(['Active', 'Left'])
+    st.pyplot(fig, use_container_width=True)
 
-st.info("""
-👤 **Observation:** Median ages are similar for both churned and active drivers.  
-Age doesn’t strongly influence churn directly — but may interact with income or tenure.
-""")
+    st.info("""
+    👤 **Observation:** Median ages are similar for both churned and active drivers.  
+    Age doesn’t strongly influence churn directly — but may interact with income or tenure.
+    """)
 
-# =============================
-# 📦 8. TOTAL BUSINESS VALUE vs CHURN (Boxplot)
-# =============================
-st.subheader("📦 Business Value vs Churn Status")
+    # =============================
+    # 📦 8. TOTAL BUSINESS VALUE vs CHURN (Boxplot)
+    # =============================
+    st.subheader("📦 Business Value vs Churn Status")
 
-fig, ax = plt.subplots(figsize=(6, 4))
-sns.boxplot(data=df, x='Churn', y='Total Business Value', ax=ax, palette='Purples')
-ax.set_title("Total Business Value vs Churn")
-ax.set_xticklabels(['Active', 'Left'])
-st.pyplot(fig, use_container_width=True)
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.boxplot(data=df, x='Churn', y='Total Business Value', ax=ax, palette='Purples')
+    ax.set_title("Total Business Value vs Churn")
+    ax.set_xticklabels(['Active', 'Left'])
+    st.pyplot(fig, use_container_width=True)
 
-st.success("""
-💼 **Insight:** Active drivers generate higher total business value.  
-High performers (high TBV) are more loyal — churn prevention should focus on low TBV segments.
-""")
+    st.success("""
+    💼 **Insight:** Active drivers generate higher total business value.  
+    High performers (high TBV) are more loyal — churn prevention should focus on low TBV segments.
+    """)
 
-# =============================
-# 🔥 9. CORRELATION INSIGHTS
-# =============================
-st.markdown("### 🔥 Correlation Analysis Between Key Features")
+    # =============================
+    # 🔥 9. CORRELATION INSIGHTS
+    # =============================
+    st.markdown("### 🔥 Correlation Analysis Between Key Features")
 
-numeric_df = df.select_dtypes(include=['number'])
-fig, ax = plt.subplots(figsize=(10, 8))
-sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
-ax.set_title("Feature Correlation Heatmap")
-st.pyplot(fig, use_container_width=True)
+    numeric_df = df.select_dtypes(include=['number'])
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
+    ax.set_title("Feature Correlation Heatmap")
+    st.pyplot(fig, use_container_width=True)
 
-st.info("""
-📊 **Summary:**
-- **Quarterly Rating & Grade** show strong negative correlation with churn.  
-- **Income & TBV** correlate highly (0.78) — high earners generate more business value.  
-- Demographic factors (Gender, Age) have minimal correlation → low modeling priority.
-""")
+    st.info("""
+    📊 **Summary:**
+    - **Quarterly Rating & Grade** show strong negative correlation with churn.  
+    - **Income & TBV** correlate highly (0.78) — high earners generate more business value.  
+    - Demographic factors (Gender, Age) have minimal correlation → low modeling priority.
+    """)
 
 
     st.write("# Checking correlation of columns")
