@@ -158,12 +158,13 @@ with tab1:
     st.write("**Shape:**", df.shape)
     st.write("**Columns:**", df.columns.tolist())
 
-    # Create df.info() equivalent
-    buffer = []
-    df.info(buf=buffer)
-    info_str = '\n'.join(buffer)
+    import io
 
-    # Display inside Streamlit
+    # Create a string buffer
+    buffer = io.StringIO()
+    df.info(buf=buffer)
+    info_str = buffer.getvalue()
+
     st.text(info_str)
 
     # =============================
