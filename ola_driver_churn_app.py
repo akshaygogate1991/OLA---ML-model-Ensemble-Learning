@@ -114,27 +114,37 @@ with tab1:
         st.bar_chart(df_year.set_index('Year'))
 
     st.info("📉 Churn is relatively consistent across 2019 and 2020.")
-
     # =============================
     # 3️⃣ DRIVER TENURE & EARNINGS
     # =============================
     st.markdown("### 💰 Tenure vs Total Income Analysis")
-    df1['EndDate'] = df['LastWorkingDate']
-    df1['EndDate'] = df['EndDate'].fillna(df['MMM-YY'])
-    
-    # calculate working duration in year
-    df1['Tenure_Years'] = (df['EndDate'] - df['Dateofjoining']).dt.days / 365
 
-    driver_summary = df1.groupby('Driver_ID').agg({
-        'Tenure_Years': 'max',
-        'Income': 'sum'
-    }).reset_index()
-    # Round tenure for better readability
-    driver_summary['Tenure_Years'] = driver_summary['Tenure_Years'].round(2).sort_values(ascending=False)
+    # Make sure df1 is a proper copy
+    df1 = df.copy()
+
+    # ✅ Step 1: Define EndDate correctly inside df1
+    df1['EndDate'] = df1['LastWorkingDate'].fillna(df1['MMM-YY'])
+
+    # ✅ Step 2: Calculate Tenure (years)
+    df1['Tenure_Years'] = (df1['EndDate'] - df1['Dateofjoining']).dt.days / 365
+
+    # ✅ Step 3: Copy it back to main df (index-aligned)
+    df['Tenure_Years'] = df1['Tenure_Years'].values
+
+    # ✅ Step 4: Display confirmation in app
+    st.success(f"✅ 'Tenure_Years' column added successfully! New Shape: {df.shape}")
+    st.write("📋 Columns in DataFrame:")
+    st.write(df.columns.tolist())
+
+    # ✅ Step 5: Summary table
+    driver_summary = df1.groupby('Driver_ID').agg({'Tenure_Years': 'max', 'Income': 'sum'  }).reset_index()
+
+    driver_summary['Tenure_Years'] = driver_summary['Tenure_Years'].round(2)
 
     st.dataframe(driver_summary.head(10).style.background_gradient(cmap='Greens'))
     st.caption("🧾 Top drivers who left had total earnings between ₹35–45 lakhs.")
 
+    
     # =============================
     # 4️⃣ AGE DISTRIBUTION INSIGHTS
     # =============================
@@ -150,31 +160,7 @@ with tab1:
         st.bar_chart(churn_age.set_index('Age'))
 
     st.info("🧓 Most churn occurs in age group **30–34 years** — likely mid-career transitions.")
-    # =============================
-    # 3️⃣ DRIVER TENURE & EARNINGS
-    # =============================
-    st.markdown("### 💰 Tenure vs Total Income Analysis")
-
-    df1['EndDate'] = df['LastWorkingDate']
-    df1['EndDate'] = df1['EndDate'].fillna(df['MMM-YY'])
-
-    # ✅ Calculate working duration in years
-    df1['Tenure_Years'] = (df1['EndDate'] - df1['Dateofjoining']).dt.days / 365
-
-    # ✅ Copy back to main dataframe
-    df['Tenure_Years'] = df1['Tenure_Years']
-
-    st.success(f"✅ 'Tenure_Years' column added successfully! Shape: {df.shape}")
-
-    driver_summary = df1.groupby('Driver_ID').agg({
-        'Tenure_Years': 'max',
-        'Income': 'sum'
-        }).reset_index()
-
-    driver_summary['Tenure_Years'] = driver_summary['Tenure_Years'].round(2)
-    st.dataframe(driver_summary.head(10).style.background_gradient(cmap='Greens'))
-    st.caption("🧾 Top drivers who left had total earnings between ₹35–45 lakhs.")
-
+    
     # =============================
     # 5️⃣ DISTRIBUTION INSIGHTS
     # =============================
