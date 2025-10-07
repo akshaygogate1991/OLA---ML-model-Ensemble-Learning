@@ -151,7 +151,22 @@ with tab1:
         st.bar_chart(churn_age.set_index('Age'))
 
     st.info("🧓 Most churn occurs in age group **30–34 years** — likely mid-career transitions.")
-    ST.write(df.info())
+    # =============================
+    # 🔍 DATA OVERVIEW SECTION
+    # =============================
+    st.markdown("### 🧾 DataFrame Summary")
+    # Display basic stats
+    st.write("**Shape:**", df.shape)
+    st.write("**Columns:**", df.columns.tolist())
+
+    # Create df.info() equivalent
+    buffer = []
+    df.info(buf=buffer)
+    info_str = '\n'.join(buffer)
+
+    # Display inside Streamlit
+    st.text(info_str)
+
     # =============================
     # 5️⃣ DISTRIBUTION INSIGHTS
     # =============================
