@@ -538,32 +538,10 @@ with tab1:
     👉 Consider log or power transformations for highly skewed features before training.
     """)
 
-  # =============================
+    # =============================
     # 6️⃣ Flag Feature Creation
     # =============================
-    st.subheader("🚩 Feature Engineering — Driver Flags")
-    # High Business values Driver
-    threshold_bv=df['Total Business Value'].quantile(0.9)
-    df['High_Business_Value_Flag'] = (df['Total Business Value'] >= threshold_bv).astype(int)
-    # Low Income Driver
-    threshold_income = df['Income'].quantile(0.10)
-    df['Low_Income_Flag'] = (df['Income'] <= threshold_income).astype(int)
-    # Senior Age Group Flag
-    df['Senior_Driver_Flag'] = (df['Age'] > 50).astype(int)
-    # Recent Joiner Flag
-    df['Recent_Joiner_Flag'] = (df['Tenure_Years'] < 1).astype(int)
-    # Low Rating Flag
-    df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
-    
-    st.success("""
-    🚩 **Flag Variables Added Successfully:**
-    - High Business Value Driver  
-    - Low Income Driver  
-    - Senior Driver  
-    - Recent Joiner  
-    - Low Rating Driver  
-    These engineered flags enhance churn prediction by capturing driver behavior patterns.
-    """)
+
 
     # =============================
     # 7️⃣ City & Age Group Analysis
