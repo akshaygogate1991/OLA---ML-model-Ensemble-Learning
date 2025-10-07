@@ -142,6 +142,7 @@ with tab1:
         df['Tenure_Years'] = (df['EndDate'] - df['Dateofjoining']).dt.days / 365
         df['Tenure_Years'] = df['Tenure_Years'].round(2)
         st.success("✅ 'Tenure_Years' successfully added to main dataframe.")
+    df["Tenure_Years"]=df1["Tenure_Years"]
 
 
     # =============================
