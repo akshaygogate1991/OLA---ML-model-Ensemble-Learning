@@ -376,18 +376,6 @@ with tab1:
     - Demographic factors (Gender, Age) have minimal correlation → low modeling priority.
     """)
 
-
-    st.write("# Checking correlation of columns")
-    numeric_df = df.select_dtypes(include=['number'])
-    corr_matrix = numeric_df.corr()
-
-    fig, ax = plt.subplots(figsize=(12,10 ))
-    sns.heatmap(corr_matrix, annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
-    ax.set_title("Correlation Heatmap")
-    plt.tight_layout()
-    st.pyplot(fig, use_container_width=False)
-
-
     st.write("""
     The data strongly suggests that employee performance and seniority are the primary drivers of churn. Employees with low 
     quarterly ratingsand those in lower grades are significantly more likely to leave the company. In contrast, demographic factors like 
@@ -412,29 +400,79 @@ with tab1:
     a very large overlap between the two groups.
     The weakcorrelation of -0.1 in the heatmap confirms that income is not a primary driver of churn on its own.""")
 
-    # removing duplicates
-    # Find complete duplicate rows
+    # =============================
+    # 🧹 DATA CLEANING & FEATURE ENGINEERING
+    # =============================
+
+    st.markdown("---")
+    st.header("🧹 Data Cleaning, Outlier Handling & Feature Engineering")
+
+    # =============================
+    # 1️⃣ Duplicate Check
+    # =============================
+    st.subheader("🧾 Checking for Duplicate Records")
+
     duplicate_rows = df[df.duplicated()]
+    dup_count = duplicate_rows.shape[0]
+
+    st.metric(label="Duplicate Rows Found", value=dup_count)
+    if dup_count > 0:
+        st.warning(f"⚠️ Found {dup_count} duplicate records. Consider removing them before modeling.")
+    else:
+        st.success("✅ No duplicate records found.")
+
+    # =============================
+    # 2️⃣ Missing Value Analysis
+    # =============================
+    st.subheader("🔍 Missing Value Check")
+
+    missing_summary = df.isnull().sum()
+    missing_summary = missing_summary[missing_summary > 0].sort_values(ascending=False)
+    if not missing_summary.empty:
+        st.write("### Columns with Missing Values")
+        st.dataframe(missing_summary.to_frame(name="Missing Count").style.background_gradient(cmap="Reds"))
+    else:
+        st.success("✅ No missing values detected in dataset.")
+
+    # =============================
+    # 3️⃣ Missing Value Imputation (KNN)
+    # =============================
+    st.subheader("🧠 Handling Missing Values with KNN Imputer")
+
     from sklearn.impute import KNNImputer
 
-
-    # Select only the relevant columns for imputation
     subset_cols = ['Age', 'Gender']
-    df_subset = df[subset_cols]
-
-    # Apply KNN Imputer
     imputer = KNNImputer(n_neighbors=5)
+    df_subset = df[subset_cols]
     df_imputed = pd.DataFrame(imputer.fit_transform(df_subset), columns=subset_cols)
 
-    # Update the original DataFrame with imputed values
     df['Age'] = df_imputed['Age']
     df['Gender'] = df_imputed['Gender']
 
-    # Once again, check for missing values
+    # Post-imputation check
     missing_summary = df.isnull().sum()
-    missing_summary = missing_summary[missing_summary > 0].sort_values(ascending=False)
+    missing_summary = missing_summary[missing_summary > 0]
+    if missing_summary.empty:
+        st.success("✅ Missing values successfully imputed for Age & Gender using KNN.")
+    else:
+        st.warning("⚠️ Some missing values remain after imputation.")
 
-  # Checking by IQR method
+    # =============================
+    # 4️⃣ Outlier Detection & Treatment (IQR)
+    # =============================
+    st.subheader("📦 Outlier Detection & Capping")
+
+    cols = ['Age', 'Income']
+    st.write("### Before Outlier Treatment")
+    col1, col2 = st.columns(2)
+    for i, col in enumerate(cols):
+        with [col1, col2][i]:
+            fig, ax = plt.subplots(figsize=(5, 2))
+            sns.boxplot(x=df[col], color='orange', ax=ax)
+            ax.set_title(f"Before Capping: {col}")
+            st.pyplot(fig)
+
+    # IQR Capping
     def cap_outliers_iqr(df, col):
         Q1 = df[col].quantile(0.25)
         Q3 = df[col].quantile(0.75)
@@ -444,113 +482,157 @@ with tab1:
         df[col] = df[col].clip(lower, upper)
         return df
 
-    # Select only numeric columns
-    cols = df.select_dtypes(include=['number']).columns
-
-    # Apply IQR capping for each numeric column
     for col in cols:
         df = cap_outliers_iqr(df, col)
-        
-    st.header("📊 Continuous Variables Distribution & Skewness")
-    continuous_vars = ['Age', 'Income', 'Total Business Value', 'Tenure_Years']
-    for col in continuous_vars:
-        fig, ax = plt.subplots(figsize=(8, 4))
-        sns.histplot(df[col].dropna(), kde=True, bins=30, ax=ax)
-        ax.set_title(f'{col} | Skewness: {round(df[col].skew(), 2)}')
-        ax.set_xlabel(col)
-        ax.set_ylabel("Frequency")
-        st.pyplot(fig, use_container_width=True)
-    st.write("""Feature Skewness
-    Age 0.42 Mildly right-skewed
-    Income 0.62 Moderately right-skewed
-    Total Business Value 6.97 Highly right-skewed
-    Tenure_Years 1.14 Significantly right-skewed""")
 
-    
-    # flage creation
-    # High Business Value Driver
+    st.write("### After Outlier Treatment")
+    col1, col2 = st.columns(2)
+    for i, col in enumerate(cols):
+        with [col1, col2][i]:
+            fig, ax = plt.subplots(figsize=(5, 2))
+            sns.boxplot(x=df[col], color='green', ax=ax)
+            ax.set_title(f"After Capping: {col}")
+            st.pyplot(fig)
+
+    st.info("""
+    ✅ Outliers were capped using the **Interquartile Range (IQR)** method.  
+    This helps stabilize model performance and prevents bias from extreme values.
+    """)
+
+    # =============================
+    # 5️⃣ Skewness Check (Feature Normality)
+    # =============================
+    st.subheader("📊 Skewness of Continuous Variables")
+
+    continuous_vars = ['Age', 'Income', 'Total Business Value', 'Tenure_Years']
+
+    col1, col2 = st.columns(2)
+    for i, col in enumerate(continuous_vars):
+        fig, ax = plt.subplots(figsize=(5, 3))
+        sns.histplot(df[col], kde=True, bins=30, ax=ax)
+        ax.set_title(f"{col} | Skewness: {round(df[col].skew(), 2)}")
+        st.pyplot(fig, use_container_width=True)
+
+    st.info("""
+    📈 **Feature Skewness Summary:**
+    - **Age:** 0.42 → Mildly right-skewed  
+    - **Income:** 0.62 → Moderately right-skewed  
+    - **Total Business Value:** 6.97 → Highly right-skewed  
+    - **Tenure_Years:** 1.14 → Significantly right-skewed  
+    👉 Consider log or power transformations for highly skewed features before training.
+    """)
+
+    # =============================
+    # 6️⃣ Flag Feature Creation
+    # =============================
+    st.subheader("🚩 Feature Engineering — Driver Flags")
+
     threshold_bv = df['Total Business Value'].quantile(0.90)
     df['High_Business_Value_Flag'] = (df['Total Business Value'] >= threshold_bv).astype(int)
-    # Low Income Driver
+
     threshold_income = df['Income'].quantile(0.10)
     df['Low_Income_Flag'] = (df['Income'] <= threshold_income).astype(int)
-    # Senior Age Group Flag
+
     df['Senior_Driver_Flag'] = (df['Age'] > 50).astype(int)
-    # Recent Joiner Flag
     df['Recent_Joiner_Flag'] = (df['Tenure_Years'] < 1).astype(int)
-    # Low Rating Flag
     df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
 
+    st.dataframe(
+        df[['High_Business_Value_Flag', 'Low_Income_Flag', 'Senior_Driver_Flag',
+            'Recent_Joiner_Flag', 'Low_Rating_Flag']].head(10),
+            use_container_width=True
+                )
 
-    st.header("📊 City & Age Group Analysis")
+    st.success("""
+    🚩 **Flag Variables Added Successfully:**
+    - High Business Value Driver  
+    - Low Income Driver  
+    - Senior Driver  
+    - Recent Joiner  
+    - Low Rating Driver  
+    These engineered flags enhance churn prediction by capturing driver behavior patterns.
+    """)
+
+    # =============================
+    # 7️⃣ City & Age Group Analysis
+    # =============================
+    st.markdown("---")
+    st.header("🏙️ City & Age Group Analysis")
+
     # ---- Churn Rate by City ----
-    st.subheader("Churn Rate by City")
+    st.subheader("📉 Churn Rate by City")
     city_churn_rate = df.groupby('City')['Churn'].mean().sort_values(ascending=False)
-    fig, ax = plt.subplots(figsize=(12,6))
-    city_churn_rate.plot(kind='bar', ax=ax, color='skyblue', edgecolor='black')
-    ax.set_ylabel("Churn Rate")
-    ax.set_xlabel("City")
+    fig, ax = plt.subplots(figsize=(10, 5))
+    city_churn_rate.plot(kind='bar', color='tomato', edgecolor='black', ax=ax)
     ax.set_title("Churn Rate by City")
-    plt.xticks(rotation=90)
+    ax.set_ylabel("Churn Rate")
     st.pyplot(fig, use_container_width=True)
 
     # ---- Total Business Value by City ----
-    st.subheader("Total Business Value by City")
-    fig, ax = plt.subplots(figsize=(12,6))
+    st.subheader("💼 Total Business Value by City")
+    fig, ax = plt.subplots(figsize=(10, 5))
     sns.boxplot(x='City', y='Total Business Value', data=df, ax=ax)
-    ax.set_xticklabels(ax.get_xticklabels(), rotation=90)
+    plt.xticks(rotation=90)
     ax.set_title("Total Business Value by City")
     st.pyplot(fig, use_container_width=True)
 
     # ---- Driver Count per City ----
-    st.subheader("Driver Count per City")
-    fig, ax = plt.subplots(figsize=(10,7))
-    df['City'].value_counts().plot(kind='barh', ax=ax)
+    st.subheader("🚗 Driver Count per City")
+    fig, ax = plt.subplots(figsize=(10, 6))
+    df['City'].value_counts().plot(kind='barh', color='steelblue', ax=ax)
     ax.set_xlabel("Number of Drivers")
-    ax.set_ylabel("City")
-    ax.set_title("Driver Count per City")
+    ax.set_title("Driver Distribution Across Cities")
     st.pyplot(fig, use_container_width=True)
 
     # ---- Average Income by City ----
-    st.subheader("Average Income by City")
+    st.subheader("💰 Average Income by City")
     avg_income_city = df.groupby('City')['Income'].mean().sort_values(ascending=False)
-    fig, ax = plt.subplots(figsize=(12,6))
-    avg_income_city.plot(kind='bar', ax=ax)
-    ax.set_ylabel("Average Income")
-    ax.set_xlabel("City")
+    fig, ax = plt.subplots(figsize=(10, 5))
+    avg_income_city.plot(kind='bar', color='seagreen', ax=ax)
     ax.set_title("Average Income by City")
     st.pyplot(fig, use_container_width=True)
 
-    # ---- Age Group Binning ----
-    st.subheader("Age Group Analysis")
+    # =============================
+    # 8️⃣ AGE GROUP BINNING
+    # =============================
+    st.subheader("👥 Age Group Distribution and Churn")
+
     bins = [0, 30, 50, df['Age'].max()]
     labels = ['Young', 'Middle-aged', 'Senior']
     df['Age_Group'] = pd.cut(df['Age'], bins=bins, labels=labels, include_lowest=True)
 
-    st.write("Distribution of Age Groups:")
-    st.write(df['Age_Group'].value_counts())
-    
-    # ---- Churn Rate by Age Group ----
-    st.subheader("Churn Rate by Age Group")
-    age_churn_rate = df.groupby('Age_Group', observed=False)['Churn'].mean().sort_values(ascending=False)
+    col1, col2 = st.columns(2)
+    with col1:
+        st.dataframe(df['Age_Group'].value_counts().reset_index().rename(columns={'index': 'Age Group', 'Age_Group': 'Count'}))
+    with col2:
+        fig, ax = plt.subplots(figsize=(5, 3))
+        df['Age_Group'].value_counts().plot(kind='bar', color='plum', ax=ax)
+        ax.set_title("Driver Age Group Distribution")
+        st.pyplot(fig)
 
-    fig2, ax2 = plt.subplots(figsize=(8,5))
-    age_churn_rate.plot(kind='bar', ax=ax2, color='lightcoral', edgecolor='black')
-    ax2.set_ylabel("Churn Rate")
-    ax2.set_xlabel("Age Group")
+    # ---- Churn Rate by Age Group ----
+    st.subheader("📊 Churn Rate by Age Group")
+    age_churn_rate = df.groupby('Age_Group', observed=False)['Churn'].mean().sort_values(ascending=False)
+    fig2, ax2 = plt.subplots(figsize=(6, 4))
+    age_churn_rate.plot(kind='bar', color='salmon', ax=ax2)
     ax2.set_title("Churn Rate by Age Group")
     st.pyplot(fig2, use_container_width=True)
 
-    # ---- Average Business Value by Age Group ----
-    st.subheader("Average Business Value by Age Group")
+    # ---- Avg Business Value by Age Group ----
+    st.subheader("💼 Average Business Value by Age Group")
     age_bv = df.groupby('Age_Group')['Total Business Value'].mean()
-    fig, ax = plt.subplots(figsize=(8,5))
-    age_bv.plot(kind='bar', ax=ax)
-    ax.set_ylabel("Average Business Value")
-    ax.set_xlabel("Age Group")
-    ax.set_title("Average Business Value by Age Group")
-    st.pyplot(fig, use_container_width=True)
+    fig3, ax3 = plt.subplots(figsize=(6, 4))
+    age_bv.plot(kind='bar', color='skyblue', ax=ax3)
+    ax3.set_title("Average Business Value by Age Group")
+    st.pyplot(fig3, use_container_width=True)
 
+    st.success("""
+    👥 **Insights:**
+    - Middle-aged drivers dominate workforce (~30–45 years).  
+    - Young drivers (<30) have highest churn probability.  
+    - Senior drivers show higher loyalty but lower TBV.  
+    Retention focus should target **young & mid-age groups** through engagement programs.
+    """)
 
 # ----------------------------- TAB 2: MODEL -----------------------------
 with tab2:
