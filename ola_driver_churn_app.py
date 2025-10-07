@@ -83,11 +83,32 @@ with tab1:
     df['Churn'] = df['LastWorkingDate'].notnull().astype(int)
     st.write("Create Churn column: 1 if LastWorkingDate is present, else 0 ")
 
-    df1=df
+    # Extract year and month
+    df1 = df.copy()
     df1['year'] = df1['LastWorkingDate'].dt.year
     df1['month'] = df1['LastWorkingDate'].dt.month
-    st.write(df1['month'].value_counts())
-    st.write("Most of the drive leaves the company in month July September and November")
+
+    # --- Month-wise churn ---
+    st.subheader("📅 Driver Churn by Month")
+
+    df_month = df1['month'].value_counts().reset_index()
+    df_month.columns = ['Month', 'Count']
+
+    # Styled dataframe
+    st.dataframe(df_month.style.highlight_max(subset=['Count'], color='lightgreen'))
+
+    # Bar chart
+    st.bar_chart(df_month.set_index('Month'))
+
+    # Insight text
+    top_months = df_month.sort_values(by='Count', ascending=False).head(3)['Month'].tolist()
+    st.info(f"🚗 Most drivers leave during **months {top_months}** — focus on retention during these periods.")
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.dataframe(df_month.style.highlight_max(subset=['Count'], color='lightgreen'))
+    with col2:
+        st.bar_chart(df_month.set_index('Month'))
 
     st.write((df1['year'].value_counts()))
     st.write("Approximately drive churn rate is same for year 2019 and 2020")
