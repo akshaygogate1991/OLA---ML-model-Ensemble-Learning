@@ -1,11 +1,11 @@
-streamlit==1.39.0
 pandas
 numpy
-matplotlib
-seaborn
 scikit-learn
+imbalanced-learn
 xgboost
-joblib
-category_encoders
 lightgbm
+category_encoders
+joblib
+streamlit
+
 
