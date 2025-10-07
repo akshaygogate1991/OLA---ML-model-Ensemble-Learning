@@ -409,7 +409,8 @@ with tab1:
     a strong differentiator. • Income: While the median income foremployees who left is slightly lower, the Income by Churn Status boxplot shows
     a very large overlap between the two groups.
     The weakcorrelation of -0.1 in the heatmap confirms that income is not a primary driver of churn on its own.""")
-
+    st.write("📋 Available Columns in DataFrame:")
+    st.write(df.columns.tolist())
     # =============================
     # 🧹 DATA CLEANING & FEATURE ENGINEERING
     # =============================
@@ -513,8 +514,7 @@ with tab1:
     # 5️⃣ Skewness Check (Feature Normality)
     # =============================
     st.subheader("📊 Skewness of Continuous Variables")
-    st.write("📋 Available Columns in DataFrame:")
-    st.write(df.columns.tolist())
+
 
 
     continuous_vars = ['Age', 'Income', 'Total Business Value', 'Tenure_Years']
