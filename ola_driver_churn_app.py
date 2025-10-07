@@ -116,16 +116,11 @@ with tab2:
     try:
         model = joblib.load("models/xgboost_final_model.pkl")
         st.success("✅ Pre-trained XGBoost model loaded successfully!")
-    except:
-        st.error("❌ Model file not found. Please upload 'xgboost_final_model.pkl' to /models folder.")
+    except Exception as e:
+        st.error(f"❌ Model file not found: {e}")
+        st.info("Please upload 'xgboost_final_model.pkl' to the /models folder of your GitHub repo.")
         st.stop()
-        df = df.dropna(subset=['Churn'])
-        X = df.select_dtypes(include=['number']).drop(columns=['Churn'])
-        y = df['Churn']
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-        model = xgb.XGBClassifier(n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42)
-        model.fit(X_train, y_train)
-        joblib.dump(model, "xgb_best_model.pkl")
+
 
     # Input Form
     st.subheader("🔮 Predict Driver Churn")
