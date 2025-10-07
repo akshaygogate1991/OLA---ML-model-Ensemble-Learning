@@ -545,57 +545,64 @@ with tab1:
     # =============================
     st.subheader("🚩 Feature Engineering — Driver Flags")
 
-    # 🔍 Debug: Check columns before creating flags
+    # Step 1️⃣ — Ensure Tenure_Years is present
     st.write("✅ Columns before flag creation:", df.columns.tolist())
 
-    # Step 1️⃣ — Always recompute Tenure_Years safely
-    try:
-        if 'Tenure_Years' not in df.columns or df['Tenure_Years'].isnull().all():
-            st.warning("⚠️ 'Tenure_Years' missing or empty — recalculating it.")
+    if 'Tenure_Years' not in df.columns or df['Tenure_Years'].isnull().all():
+        st.warning("⚠️ 'Tenure_Years' missing or empty — recomputing it now...")
+        try:
             df['EndDate'] = df['LastWorkingDate'].fillna(df['MMM-YY'])
+            df['EndDate'] = pd.to_datetime(df['EndDate'], errors='coerce')
+            df['Dateofjoining'] = pd.to_datetime(df['Dateofjoining'], errors='coerce')
             df['Tenure_Years'] = (df['EndDate'] - df['Dateofjoining']).dt.days / 365
-            df['Tenure_Years'] = df['Tenure_Years'].fillna(0)
-        else:
-            st.success("✅ 'Tenure_Years' already available.")
-    except Exception as e:
-        st.error(f"❌ Error while checking 'Tenure_Years': {e}")
-        st.stop()
+            df['Tenure_Years'] = df['Tenure_Years'].fillna(0).round(2)
+            st.success("✅ Recomputed 'Tenure_Years' column successfully!")
+        except Exception as e:
+            st.error(f"❌ Failed to recompute 'Tenure_Years': {e}")
+            st.stop()
+    else:
+        st.info("ℹ️ 'Tenure_Years' already available — proceeding to flags.")
 
-    # Step 2️⃣ — Confirm presence before proceeding
+    # Step 2️⃣ — Double-check it's accessible
     if 'Tenure_Years' not in df.columns:
-        st.error("❌ 'Tenure_Years' still missing — stopping execution.")
-        st.write("Available columns:", df.columns.tolist())
+        st.error("❌ 'Tenure_Years' column still missing after recomputation. Stopping.")
+        st.write("Columns currently present:", df.columns.tolist())
         st.stop()
 
-    # Step 3️⃣ — Create flag features safely
+    # Step 3️⃣ — Create flags safely
     try:
+        # Business thresholds
         threshold_bv = df['Total Business Value'].quantile(0.90)
         threshold_income = df['Income'].quantile(0.10)
 
+        # Flags
         df['High_Business_Value_Flag'] = (df['Total Business Value'] >= threshold_bv).astype(int)
         df['Low_Income_Flag'] = (df['Income'] <= threshold_income).astype(int)
         df['Recent_Joiner_Flag'] = (df['Tenure_Years'] < 1).astype(int)
         df['Senior_Driver_Flag'] = (df['Age'] > 50).astype(int)
         df['Low_Rating_Flag'] = (df['Quarterly Rating'] <= 2).astype(int)
 
+        # Display preview
         st.dataframe(
-            df[['High_Business_Value_Flag', 'Low_Income_Flag',
-                'Senior_Driver_Flag', 'Recent_Joiner_Flag',
-                'Low_Rating_Flag']].head(10),
+            df[['Tenure_Years', 'High_Business_Value_Flag', 'Low_Income_Flag',
+                'Senior_Driver_Flag', 'Recent_Joiner_Flag', 'Low_Rating_Flag']].head(10),
             use_container_width=True
         )
-
         st.success("✅ All feature flags created successfully!")
 
     except KeyError as e:
-        st.error(f"❌ Missing column during flag creation: {e}")
-        st.write("Available columns:", df.columns.tolist())
-    except Exception as e:
-        st.error(f"❌ Unexpected error during flag creation: {e}")
-        st.write("Available columns:", df.columns.tolist())
+        st.error(f"❌ KeyError: {e} — one of the required columns is missing.")
+        st.write("Columns present right now:", df.columns.tolist())
 
-    st.write("✅ Final columns after flag creation:", df.columns.tolist())
-    st.write("🧾 Sample rows:", df[['Tenure_Years']].head())
+    except Exception as e:
+        st.error(f"❌ Unexpected error while creating flags: {e}")
+        st.write("Columns present right now:", df.columns.tolist())
+
+    # Step 4️⃣ — Debug confirmation
+    st.write("✅ Final Columns After Flag Creation:")
+    st.write(df.columns.tolist())
+    st.write("🧾 Sample of Tenure_Years column:")
+    st.write(df[['Tenure_Years']].head())
 
     # =============================
     # 7️⃣ City & Age Group Analysis
