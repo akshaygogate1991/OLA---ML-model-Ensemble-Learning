@@ -135,6 +135,15 @@ with tab1:
     st.dataframe(driver_summary.head(10).style.background_gradient(cmap='Greens'))
     st.caption("🧾 Top drivers who left had total earnings between ₹35–45 lakhs.")
 
+    # 🔧 Ensure Tenure_Years exists in main df
+    if 'Tenure_Years' not in df.columns:
+        st.warning("⚠️ 'Tenure_Years' not found — creating from joining and last working date.")
+        df['EndDate'] = df['LastWorkingDate'].fillna(df['MMM-YY'])
+        df['Tenure_Years'] = (df['EndDate'] - df['Dateofjoining']).dt.days / 365
+        df['Tenure_Years'] = df['Tenure_Years'].round(2)
+        st.success("✅ 'Tenure_Years' successfully added to main dataframe.")
+
+
     # =============================
     # 4️⃣ AGE DISTRIBUTION INSIGHTS
     # =============================
