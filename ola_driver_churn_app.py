@@ -704,15 +704,28 @@ with tab2:
     st.dataframe(pd.DataFrame(results_data).style.highlight_max(axis=0, color="lightgreen"))
     st.success("✅ XGBoost selected as final model for churn prediction.")
 
-    # Load or train model
+    # Load trained model
     try:
         model = joblib.load("models/xgboost_final_model.pkl")
         st.success("✅ Pre-trained XGBoost model loaded successfully!")
     except Exception as e:
         st.error(f"❌ Model file not found: {e}")
-        st.info("Please upload 'xgboost_final_model.pkl' to the /models folder of your GitHub repo.")
         st.stop()
 
+    # Define the expected feature names (must match model training)
+    expected_features = [
+        'Driver_Age', 
+        'Monthly_Income', 
+        'Quarterly_Rating', 
+        'Grade', 
+        'Tenure_Years', 
+        'Total_Business_Value',
+        'Low_Income_Flag',
+        'Senior_Driver_Flag',
+        'Recent_Joiner_Flag',
+        'Low_Rating_Flag',
+        'Age_Group'
+    ]
 
     # Input Form
     st.subheader("🔮 Predict Driver Churn")
@@ -723,16 +736,53 @@ with tab2:
     tenure = st.number_input("Tenure (Years)", min_value=0.0, max_value=15.0, value=2.5)
     tbv = st.number_input("Total Business Value", min_value=0, max_value=2000000, value=300000)
 
+    # Derive engineered flags same as training phase
+    low_income_flag = 1 if income < 40000 else 0
+    senior_driver_flag = 1 if age > 50 else 0
+    recent_joiner_flag = 1 if tenure < 1 else 0
+    low_rating_flag = 1 if rating < 3 else 0
+    age_group = (
+        'Young' if age < 30 else
+        'Mid-age' if 30 <= age <= 50 else
+        'Senior'
+    )
+
     if st.button("🚀 Predict"):
-        input_data = pd.DataFrame([[age, income, rating, grade, tenure, tbv]],
-                                  columns=['Age', 'Income', 'Quarterly Rating', 'Grade', 'Tenure_Years', 'Total Business Value'])
+        # Prepare input data with all required features
+        input_dict = {
+            'Driver_Age': [age],
+            'Monthly_Income': [income],
+            'Quarterly_Rating': [rating],
+            'Grade': [grade],
+            'Tenure_Years': [tenure],
+            'Total_Business_Value': [tbv],
+            'Low_Income_Flag': [low_income_flag],
+            'Senior_Driver_Flag': [senior_driver_flag],
+            'Recent_Joiner_Flag': [recent_joiner_flag],
+            'Low_Rating_Flag': [low_rating_flag],
+            'Age_Group': [age_group]
+        }
+
+        input_data = pd.DataFrame(input_dict)
+
+        # Encode categorical variable (Age_Group)
+        input_data = pd.get_dummies(input_data, drop_first=True)
+
+        # Align columns to match model training
+        for col in expected_features:
+            if col not in input_data.columns:
+                input_data[col] = 0
+        input_data = input_data[expected_features]
+
+        # Prediction
         pred = model.predict(input_data)[0]
         prob = model.predict_proba(input_data)[0][1]
+
+        # Output
         if pred == 1:
             st.error(f"⚠️ Driver likely to CHURN (Probability: {prob:.2f})")
         else:
             st.success(f"✅ Driver likely to STAY (Probability: {prob:.2f})")
-
 # ----------------------------- TAB 3: INSIGHTS -----------------------------
 with tab3:
     st.header("💡 Business Insights")
