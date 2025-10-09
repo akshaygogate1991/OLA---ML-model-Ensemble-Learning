@@ -767,7 +767,7 @@ with tab2:
         if pred == 1:
             st.error(f"⚠️ Driver likely to CHURN (Probability: {prob:.2f})")
         else:
-            st.success(f"✅ Driver likely to STAY (Probability: {
+            st.write(f"Driver likely to CHURN (Probability: {prob:.2f})")
 
 # ----------------------------- TAB 3: INSIGHTS -----------------------------
 with tab3:
