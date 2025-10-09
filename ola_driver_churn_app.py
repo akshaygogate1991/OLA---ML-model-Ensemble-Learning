@@ -753,9 +753,7 @@ with tab2:
         df_input['Age_Group'] = pd.cut(df_input['Age'], bins=bins, labels=labels, include_lowest=True)
 
         # --- 2️⃣ Apply Encoding ---
-        # Encode City (Target Encoder)
         df_input['City'] = target_enc.transform(df_input['City'])
-        # Encode Age_Group (Label Encoder)
         df_input['Age_Group'] = le.transform(df_input['Age_Group'])
 
         # --- 3️⃣ Predict ---
@@ -767,7 +765,10 @@ with tab2:
         if pred == 1:
             st.error(f"⚠️ Driver likely to CHURN (Probability: {prob:.2f})")
         else:
-            st.write(f"Driver likely to CHURN (Probability: {prob:.2f})")
+            st.success(f"✅ Driver likely to STAY (Probability: {prob:.2f})")
+
+        st.write("**Feature values used:**")
+        st.dataframe(df_input)
 
 # ----------------------------- TAB 3: INSIGHTS -----------------------------
 with tab3:
