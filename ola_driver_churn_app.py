@@ -770,24 +770,3 @@ with tab2:
         st.write("**Feature values used:**")
         st.dataframe(df_input)
 
-# ----------------------------- TAB 3: INSIGHTS -----------------------------
-with tab3:
-    st.header("💡 Business Insights")
-    st.markdown("""
-    ### Key Insights from Analysis:
-    1. **Performance & Grade** are the strongest churn indicators.  
-       - Low-rated and low-grade drivers are most likely to churn.
-    2. **Demographics** have minimal impact (Gender, Age).  
-       - Majority of churners are aged 30–34.
-    3. **Tenure & Business Value:**  
-       - Drivers with < 1 year tenure and low TBV are 3× more likely to churn.
-    4. **City Variation:**  
-       - Highest churn observed in C20, C26, and C29.
-
-    ---
-    🧩 **Business Actionables**
-    - Offer fast-track promotions & retention bonuses for early-career drivers.  
-    - Provide training for low-rating drivers.  
-    - Use this model to flag high-churn-risk drivers early.
-    """)
-    st.info("🎯 Data-driven retention strategies can reduce churn by up to **20%**.")
