@@ -18,42 +18,6 @@ st.title("🚖 Ola Driver Churn Prediction Dashboard")
 # ----------------------------- CREATE TABS -----------------------------
 tab1, tab2, tab3 = st.tabs(["📊 EDA", "🤖 ML Model & Prediction", "💡 Insights"])
 
-# ----------------------------- LOAD DATA FROM GOOGLE SHEETS -----------------------------
-st.info("📂 Loading dataset directly from Google Sheets...")
-
-# Google Sheet ID (from your link)
-sheet_id = "1tZgqv4JIsIL_orhMGsjvYak8yubM50GiA1P45TWJ_fs"
-
-# Sheet name (bottom tab name)
-sheet_name = "Sheet1"  # change if renamed
-
-# Construct CSV export link
-sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
-
-# Try loading data from Google Sheets
-try:
-    df = pd.read_csv(sheet_url)
-    st.success(f"✅ Data loaded successfully! Shape: {df.shape}")
-    st.write("### Preview of Data:")
-    st.dataframe(df.head(), use_container_width=True)
-
-except Exception as e:
-    st.error(f"❌ Failed to load dataset: {e}")
-    st.stop()
-
-# ----------------------------- CHURN COLUMN CHECK -----------------------------
-if 'Churn' not in df.columns:
-    st.warning("⚠️ 'Churn' column not found — creating one based on LastWorkingDate...")
-
-    if 'LastWorkingDate' in df.columns:
-        df['Churn'] = df['LastWorkingDate'].notnull().astype(int)
-        st.success("✅ Created new column: **Churn = 1 if LastWorkingDate present, else 0**")
-    else:
-        st.error("❌ Cannot derive 'Churn' column. Please include it or add 'LastWorkingDate'.")
-        st.stop()
-else:
-    st.info("✅ 'Churn' column already exists in the dataset.")
-
 
 # =====================================================================
 # ----------------------------- TAB 1: EDA -----------------------------
@@ -61,6 +25,42 @@ else:
 
 with tab1:
     st.header("📊 Exploratory Data Analysis (EDA)")
+    # ----------------------------- LOAD DATA FROM GOOGLE SHEETS -----------------------------
+    st.info("📂 Loading dataset directly from Google Sheets...")
+
+    # Google Sheet ID (from your link)
+    sheet_id = "1tZgqv4JIsIL_orhMGsjvYak8yubM50GiA1P45TWJ_fs"
+
+    # Sheet name (bottom tab name)
+    sheet_name = "Sheet1"  # change if renamed
+
+    # Construct CSV export link
+    sheet_url = f"https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv&sheet={sheet_name}"
+
+    # Try loading data from Google Sheets
+    try:
+        df = pd.read_csv(sheet_url)
+        st.success(f"✅ Data loaded successfully! Shape: {df.shape}")
+        st.write("### Preview of Data:")
+        st.dataframe(df.head(), use_container_width=True)
+
+    except Exception as e:
+        st.error(f"❌ Failed to load dataset: {e}")
+        st.stop()
+
+    # ----------------------------- CHURN COLUMN CHECK -----------------------------
+    if 'Churn' not in df.columns:
+        st.warning("⚠️ 'Churn' column not found — creating one based on LastWorkingDate...")
+
+        if 'LastWorkingDate' in df.columns:
+            df['Churn'] = df['LastWorkingDate'].notnull().astype(int)
+            st.success("✅ Created new column: **Churn = 1 if LastWorkingDate present, else 0**")
+        else:
+            st.error("❌ Cannot derive 'Churn' column. Please include it or add 'LastWorkingDate'.")
+            st.stop()
+    else:
+        st.info("✅ 'Churn' column already exists in the dataset.")
+
 
     st.markdown("""
     ### 🧠 Problem Statement
