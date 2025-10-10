@@ -770,7 +770,7 @@ with tab2:
         st.write("**Feature values used:**")
         st.dataframe(df_input)
 
-----------------------------------------------
+#----------------------------------------------
 with tab3:
     st.markdown("## 🔍 Business Insights & Recommendations")
 
