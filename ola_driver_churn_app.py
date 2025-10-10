@@ -770,3 +770,100 @@ with tab2:
         st.write("**Feature values used:**")
         st.dataframe(df_input)
 
+----------------------------------------------
+with tab3:
+    st.markdown("## 🔍 Business Insights & Recommendations")
+
+    st.markdown("""
+    ### ⚖️ Trade-Off Analysis
+
+    **a. Recruiting More Educated Drivers**
+
+    **Pros:**
+    - May lead to better professionalism, communication, and adherence to protocols.  
+    - Educated drivers may handle tech platforms more efficiently (app usage, navigation).
+
+    **Cons:**
+    - Higher salaries or incentives may be required.  
+    - Limited pool in certain Tier 2/3 cities.  
+    - Education level alone may not guarantee better customer experience without soft-skill training.
+
+    **Conclusion:**  
+    Recruiting highly educated drivers may not justify the ROI unless it’s paired with **performance-linked incentives** and **training**.
+
+    ---
+
+    **b. Investing in Driver Training vs. Customer Satisfaction**
+
+    **Benefits of Training:**
+    - Standardizes driver behavior and improves ride quality.  
+    - Enhances quarterly ratings — which correlate positively with total business value.
+
+    **Trade-Off:**
+    - Training costs (venue, materials, lost driving hours) can be significant.  
+    - Not all trained drivers may apply the learning effectively.
+
+    **Conclusion:**  
+    A **targeted training program** (for low-performing drivers or specific cities) offers better ROI than company-wide training.
+
+    ---
+
+    ### 💡 Recommendations
+
+    **a. Specific Strategies Derived from Model Insights**
+
+    **🎯 Targeted Training Programs**
+    - Focus on drivers with **Quarterly Rating < 3** and **low business value**.  
+    - Prioritize **cities with low average ratings** but **high ride volume** for maximum impact.
+
+    **👥 Improved Recruitment Processes**
+    - Use model insights (e.g., **Age 25–35**, **Grade A**, **high prior ratings**) for screening.  
+    - Recruit pilot batches from cities showing strong historical driver performance.
+
+    **💰 Incentive Schemes**
+    - Reward **top 10% drivers per city** using a combined metric (Quarterly Rating + Total Business Value).  
+    - Offer early ride access, bonuses, or priority support for consistent top performers.
+
+    ---
+
+    **b. Evidence from Analysis**
+
+    **🌆 City-Based Growth**
+    - If a city shows the most improvement in driver ratings over the year, increase investment in **recruitment and training** there.
+
+    **👨‍💼 Demographic Targeting**
+    - Example: **Age group 30–40** may yield the **highest total business value per ride**.  
+    - Use this for **targeted ads** or **partnerships** (e.g., with driving schools).
+
+    ---
+
+    ### 🔁 Feedback Loop for Continuous Improvement
+
+    **a. Periodic Review Process**
+    - Conduct **quarterly model validation**:
+        - Re-evaluate feature importance.  
+        - Retrain models with updated data (ratings, churn, new rides).  
+        - Track KPIs using dashboards (Power BI / Tableau).
+
+    **b. Collecting Ongoing Feedback**
+
+    **Driver Feedback:**
+    - Quarterly **anonymous surveys** on satisfaction, app usability, and customer interaction.
+
+    **Customer Feedback:**
+    - Post-ride **surveys** (ratings + open text).  
+    - Apply **NLP analysis** to detect common themes (e.g., “late pickup”, “rude driver”).
+
+    **Model Adjustments:**
+    - Integrate new variables like **real-time location accuracy** or **ride cancellation rates**.
+
+    ---
+
+    ### 🧭 Final Note
+    Balancing **business cost** and **customer satisfaction** requires a **feedback-driven ecosystem** — one that continuously learns from:
+    - Quantitative model results, and  
+    - Qualitative human insights.
+    """)
+
+    st.info("📈 These insights can guide data-backed policy design, targeted investments, and performance-linked incentives.")
+
