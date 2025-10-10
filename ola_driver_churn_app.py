@@ -47,7 +47,7 @@ if 'Churn' not in df.columns:
 
     if 'LastWorkingDate' in df.columns:
         df['Churn'] = df['LastWorkingDate'].notnull().astype(int)
-        st.success("✅ Created 'Churn' column successfully.")
+        st.success("✅ Created new column: **Churn = 1 if LastWorkingDate present, else 0**")
     else:
         st.error("❌ Cannot derive 'Churn' column. Please include it or add 'LastWorkingDate'.")
         st.stop()
@@ -58,7 +58,7 @@ else:
 # =====================================================================
 # ----------------------------- TAB 1: EDA -----------------------------
 # =====================================================================
-# ----------------------------- TAB 1: EDA -----------------------------
+
 with tab1:
     st.header("📊 Exploratory Data Analysis (EDA)")
 
@@ -84,10 +84,6 @@ with tab1:
     df['MMM-YY'] = pd.to_datetime(df['MMM-YY'], errors='coerce')
     df['Dateofjoining'] = pd.to_datetime(df['Dateofjoining'], errors='coerce')
     df['LastWorkingDate'] = pd.to_datetime(df['LastWorkingDate'], errors='coerce')
-
-    # Create churn column
-    df['Churn'] = df['LastWorkingDate'].notnull().astype(int)
-    st.success("✅ Created new column: **Churn = 1 if LastWorkingDate present, else 0**")
 
     # Extract year and month
     df1 = df.copy()
