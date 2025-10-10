@@ -687,13 +687,14 @@ with tab1:
 
 # ----------------------------- TAB 2: MODEL -----------------------------
 with tab2:
-    st.header("Machine Learning Model (XGBoost) & Predictions")
+    st.header("🤖 Machine Learning Model (XGBoost) & Predictions")
 
     st.markdown("""
     The model was trained using multiple ensemble techniques — Random Forest, Bagging, Gradient Boosting, LightGBM, and XGBoost.  
-    Based on F1-score and recall, **XGBoost** emerged as the best model.
+    Based on F1-score and Recall, **XGBoost** emerged as the most robust performer.
     """)
 
+    # ----------------------------- Model Performance Summary -----------------------------
     results_data = {
         "Model": ["XGBoost", "Gradient Boosting", "LightGBM", "Random Forest", "Bagging"],
         "Accuracy": [0.904, 0.893, 0.890, 0.903, 0.909],
@@ -704,7 +705,7 @@ with tab2:
     st.dataframe(pd.DataFrame(results_data).style.highlight_max(axis=0, color="lightgreen"))
     st.success("✅ XGBoost selected as final model for churn prediction.")
 
-    # --- Load Model & Encoders ---
+    # ----------------------------- Load Model & Encoders -----------------------------
     import joblib
     try:
         model = joblib.load("models/xgboost_final_model.pkl")
@@ -715,60 +716,81 @@ with tab2:
         st.error(f"❌ Failed to load model or encoders: {e}")
         st.stop()
 
-    # --- Input Form ---
+    # ----------------------------- User Input Form -----------------------------
     st.subheader("🔮 Predict Driver Churn")
 
-    age = st.number_input("Driver Age", min_value=18, max_value=65, value=35)
-    gender = st.selectbox("Gender (0 = Male, 1 = Female)", [0, 1])
-    city = st.selectbox("City", ["Mumbai", "Delhi", "Bangalore", "Chennai", "Pune"])  # adjust if needed
-    income = st.number_input("Monthly Income (₹)", min_value=10000, max_value=200000, value=60000)
-    rating = st.slider("Quarterly Rating", 1, 5, 3)
-    grade = st.selectbox("Grade", [1, 2, 3, 4, 5])
-    tenure = st.number_input("Tenure (Years)", min_value=0.0, max_value=15.0, value=2.5)
-    tbv = st.number_input("Total Business Value", min_value=0, max_value=2000000, value=300000)
+    col1, col2 = st.columns(2)
+    with col1:
+        age = st.number_input("Driver Age", min_value=18, max_value=65, value=35)
+        gender = st.selectbox("Gender (0 = Male, 1 = Female)", [0, 1])
+        city = st.selectbox("City", ["Mumbai", "Delhi", "Bangalore", "Chennai", "Pune"])
+        grade = st.selectbox("Grade", [1, 2, 3, 4, 5])
+    with col2:
+        income = st.number_input("Monthly Income (₹)", min_value=10000, max_value=200000, value=60000)
+        rating = st.slider("Quarterly Rating", 1, 5, 3)
+        tenure = st.number_input("Tenure (Years)", min_value=0.0, max_value=15.0, value=2.5)
+        tbv = st.number_input("Total Business Value", min_value=0, max_value=2000000, value=300000)
 
+    # Optional: Additional fields (if your model includes them)
+    with st.expander("⚙️ Advanced Inputs (Optional)"):
+        performance = st.slider("Driver Performance Score", 0, 10, 5)
+        city_tier = st.selectbox("City Tier", ["Tier 1", "Tier 2", "Tier 3"])
+
+    # ----------------------------- Prediction Button -----------------------------
     if st.button("🚀 Predict"):
-        # --- 1️⃣ Recreate engineered features exactly as in training ---
-        df_input = pd.DataFrame([{
-            'Age': age,
-            'Gender': gender,
-            'City': city,
-            'Income': income,
-            'Quarterly Rating': rating,
-            'Grade': grade,
-            'Tenure_Years': tenure,
-            'Total Business Value': tbv
-        }])
+        try:
+            # Create input DataFrame
+            df_input = pd.DataFrame([{
+                'Age': age,
+                'Gender': gender,
+                'City': city,
+                'Income': income,
+                'Quarterly Rating': rating,
+                'Grade': grade,
+                'Tenure_Years': tenure,
+                'Total Business Value': tbv,
+                'Performance_Score': performance,
+                'City_Tier': city_tier
+            }])
 
-        # Flags
-        df_input['High_Business_Value_Flag'] = (df_input['Total Business Value'] >= 0.90 * df_input['Total Business Value'].max()).astype(int)
-        df_input['Low_Income_Flag'] = (df_input['Income'] <= 40000).astype(int)
-        df_input['Senior_Driver_Flag'] = (df_input['Age'] > 50).astype(int)
-        df_input['Recent_Joiner_Flag'] = (df_input['Tenure_Years'] < 1).astype(int)
-        df_input['Low_Rating_Flag'] = (df_input['Quarterly Rating'] <= 2).astype(int)
+            # Feature Engineering (same as training)
+            df_input['High_Business_Value_Flag'] = (df_input['Total Business Value'] >= 0.90 * df_input['Total Business Value'].max()).astype(int)
+            df_input['Low_Income_Flag'] = (df_input['Income'] <= 40000).astype(int)
+            df_input['Senior_Driver_Flag'] = (df_input['Age'] > 50).astype(int)
+            df_input['Recent_Joiner_Flag'] = (df_input['Tenure_Years'] < 1).astype(int)
+            df_input['Low_Rating_Flag'] = (df_input['Quarterly Rating'] <= 2).astype(int)
 
-        # Binning Age
-        bins = [0, 30, 50, 100]
-        labels = ['Young', 'Middle-aged', 'Senior']
-        df_input['Age_Group'] = pd.cut(df_input['Age'], bins=bins, labels=labels, include_lowest=True)
+            # Age Binning
+            bins = [0, 30, 50, 100]
+            labels = ['Young', 'Middle-aged', 'Senior']
+            df_input['Age_Group'] = pd.cut(df_input['Age'], bins=bins, labels=labels, include_lowest=True)
 
-        # --- 2️⃣ Apply Encoding ---
-        df_input['City'] = target_enc.transform(df_input['City'])
-        df_input['Age_Group'] = le.transform(df_input['Age_Group'])
+            # Apply Encoders
+            df_input['City'] = target_enc.transform(df_input['City'])
+            df_input['Age_Group'] = le.transform(df_input['Age_Group'])
 
-        # --- 3️⃣ Predict ---
-        pred = model.predict(df_input)[0]
-        prob = model.predict_proba(df_input)[0][1]
+            # Reindex to ensure correct feature order
+            if hasattr(model, 'feature_names_in_'):
+                df_input = df_input.reindex(columns=model.feature_names_in_, fill_value=0)
 
-        # --- 4️⃣ Display ---
-        st.subheader("🔍 Prediction Result")
-        if pred == 1:
-            st.error(f"⚠️ Driver likely to CHURN (Probability: {prob:.2f})")
-        else:
-            st.success(f"✅ Driver likely to STAY (Probability: {prob:.2f})")
+            # Make Prediction
+            pred = model.predict(df_input)[0]
+            prob = model.predict_proba(df_input)[0][1]
 
-        st.write("**Feature values used:**")
-        st.dataframe(df_input)
+            # Display Results
+            st.subheader("🔍 Prediction Result")
+            if pred == 1:
+                st.error(f"⚠️ Driver likely to CHURN (Probability: {prob:.2f})")
+            else:
+                st.success(f"✅ Driver likely to STAY (Probability: {prob:.2f})")
+
+            # Show feature values used for prediction
+            st.markdown("### 🔢 Feature Values Used:")
+            st.dataframe(df_input)
+
+        except Exception as e:
+            st.error(f"❌ Prediction failed: {e}")
+
 
 #----------------------------------------------
 with tab3:
