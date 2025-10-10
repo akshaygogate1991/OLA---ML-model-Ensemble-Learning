@@ -26,61 +26,154 @@ tab1, tab2, tab3 = st.tabs(["📊 EDA", "🤖 ML Model & Prediction", "💡 Insi
 # =====================================================================
 # ----------------------------- TAB 1: EDA -----------------------------
 # =====================================================================
+# ----------------------------- TAB 1: EDA -----------------------------
 with tab1:
-    st.info("📂 Loading dataset directly from Google Sheets...")
+    st.header("📊 Exploratory Data Analysis (EDA)")
 
-    try:
-        df = pd.read_csv(sheet_url)
-        st.success(f"✅ Data loaded successfully! Shape: {df.shape}")
-    except Exception as e:
-        st.error(f"❌ Failed to load dataset: {e}")
-        st.stop()
+    st.markdown("""
+    ### 🧠 Problem Statement
+    Ola aims to proactively identify drivers who are at risk of **attrition (churn)**. 
+    The goal is to use **ensemble machine learning models** to predict churn and uncover actionable insights.
+    """)
 
-    # ----------------------------- Churn Column Check -----------------------------
-    if 'Churn' not in df.columns:
-        if 'LastWorkingDate' in df.columns:
-            df['Churn'] = df['LastWorkingDate'].notnull().astype(int)
-            st.success("✅ 'Churn' column created based on LastWorkingDate.")
-        else:
-            st.error("❌ Missing 'Churn' and 'LastWorkingDate' columns. Cannot proceed.")
-            st.stop()
+    st.markdown("""
+    **Key Business Objectives:**
+    - 🎯 Predict whether a driver will churn (Churn = 1) or stay (Churn = 0)  
+    - 🧩 Use ensemble models (Random Forest, Gradient Boosting, XGBoost, LightGBM) for robust predictions  
+    - 💡 Identify top churn drivers (Income, Rating, City, Tenure, etc.)  
+    - 🏆 Help Ola’s HR & Ops teams design retention strategies  
+    """)
 
-    # ----------------------------- Preview -----------------------------
     st.subheader("📋 Dataset Preview")
-    st.dataframe(df.head(), use_container_width=True)
+    st.dataframe(df.head(10), use_container_width=True)
 
-    # Convert dates
-    date_cols = ['MMM-YY', 'Dateofjoining', 'LastWorkingDate']
-    for col in date_cols:
-        if col in df.columns:
-            df[col] = pd.to_datetime(df[col], errors='coerce')
+    # -----------------------------
+    # Data Preprocessing
+    # -----------------------------
+    df['MMM-YY'] = pd.to_datetime(df['MMM-YY'], errors='coerce')
+    df['Dateofjoining'] = pd.to_datetime(df['Dateofjoining'], errors='coerce')
+    df['LastWorkingDate'] = pd.to_datetime(df['LastWorkingDate'], errors='coerce')
 
-    # Create Tenure
-    if 'MMM-YY' in df.columns and 'Dateofjoining' in df.columns:
-        df['EndDate'] = df['LastWorkingDate'].fillna(df['MMM-YY'])
-        df['Tenure_Years'] = (df['EndDate'] - df['Dateofjoining']).dt.days / 365
-        df['Tenure_Years'] = df['Tenure_Years'].fillna(0).round(2)
-        st.success("✅ Tenure_Years column computed successfully!")
+    df['Churn'] = df['LastWorkingDate'].notnull().astype(int)
+    st.success("✅ Created new column: **Churn = 1 if LastWorkingDate present, else 0**")
 
-    # ----------------------------- Basic Insights -----------------------------
-    st.markdown("### 📊 Monthly Churn Trend")
     df1 = df.copy()
+    df1['year'] = df1['LastWorkingDate'].dt.year
     df1['month'] = df1['LastWorkingDate'].dt.month
+
+    # -----------------------------
+    # 1️⃣ Monthly Churn Trend
+    # -----------------------------
+    st.markdown("### 📅 Monthly Driver Churn Trend")
     df_month = df1['month'].value_counts().reset_index()
     df_month.columns = ['Month', 'Count']
+
     col1, col2 = st.columns(2)
     with col1:
-        st.dataframe(df_month)
+        st.dataframe(df_month.style.highlight_max(subset=['Count'], color='lightgreen'), use_container_width=True)
     with col2:
         st.bar_chart(df_month.set_index('Month'))
 
-    # Correlation
-    st.markdown("### 🔥 Correlation Heatmap")
-    numeric_df = df.select_dtypes(include=['number'])
-    fig, ax = plt.subplots(figsize=(10, 6))
-    sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
+    top_months = df_month.sort_values(by='Count', ascending=False).head(3)['Month'].tolist()
+    st.info(f"🚗 Most drivers left during **months {top_months}** — focus retention strategies there.")
+
+    # -----------------------------
+    # 2️⃣ Yearly Churn Overview
+    # -----------------------------
+    st.markdown("### 📆 Yearly Driver Churn Overview")
+    df_year = df1['year'].value_counts().reset_index()
+    df_year.columns = ['Year', 'Count']
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.dataframe(df_year.style.highlight_max(subset=['Count'], color='lightblue'))
+    with col2:
+        st.bar_chart(df_year.set_index('Year'))
+
+    st.info("📉 Churn is relatively consistent across 2019 and 2020.")
+
+    # -----------------------------
+    # 3️⃣ Tenure vs Total Income
+    # -----------------------------
+    st.markdown("### 💰 Tenure vs Total Income Analysis")
+
+    df1 = df.copy()
+    df1['EndDate'] = df1['LastWorkingDate'].fillna(df1['MMM-YY'])
+    df1['Tenure_Years'] = (df1['EndDate'] - df1['Dateofjoining']).dt.days / 365
+    df['Tenure_Years'] = df1['Tenure_Years'].values
+
+    st.success(f"✅ 'Tenure_Years' column added successfully! New Shape: {df.shape}")
+    st.write("📋 Columns in DataFrame:")
+    st.write(df.columns.tolist())
+
+    driver_summary = df1.groupby('Driver_ID').agg({'Tenure_Years': 'max', 'Income': 'sum'}).reset_index()
+    driver_summary['Tenure_Years'] = driver_summary['Tenure_Years'].round(2)
+    st.dataframe(driver_summary.head(10).style.background_gradient(cmap='Greens'))
+    st.caption("🧾 Top drivers who left had total earnings between ₹35–45 lakhs.")
+
+    # -----------------------------
+    # 4️⃣ Age Distribution
+    # -----------------------------
+    st.markdown("### 👥 Age Distribution of Drivers Who Left")
+    churn_age = df1[df1["Churn"] == 1]['Age'].value_counts().reset_index()
+    churn_age.columns = ['Age', 'Count']
+
+    col1, col2 = st.columns(2)
+    with col1:
+        st.dataframe(churn_age.head(10))
+    with col2:
+        st.bar_chart(churn_age.set_index('Age'))
+
+    st.info("🧓 Most churn occurs in age group **30–34 years** — likely mid-career transitions.")
+
+    # -----------------------------
+    # 5️⃣ Distribution Insights
+    # -----------------------------
+    st.markdown("### 📈 Key Continuous Variable Distributions")
+    sns.set(style='whitegrid')
+    cont_cols = ['Age', 'Income', 'Total Business Value']
+
+    cols = st.columns(3)
+    for i, col in enumerate(cont_cols):
+        with cols[i]:
+            fig, ax = plt.subplots(figsize=(4, 3))
+            sns.histplot(df[col].dropna(), kde=True, ax=ax, color='skyblue')
+            ax.set_title(f'{col} Distribution')
+            st.pyplot(fig)
+
+    st.info("""
+    🔹 **Age:** Mostly 28–38 years → target early retention  
+    🔹 **Income:** Concentrated ₹35K–₹75K → mid-tier earners dominate  
+    🔹 **TBV:** Highly skewed → few top performers generate bulk of revenue
+    """)
+
+    # -----------------------------
+    # 6️⃣ City-Wise Analysis
+    # -----------------------------
+    st.markdown("### 🏙️ City-wise Churn & Performance Analysis")
+    city_churn_rate = df.groupby('City')['Churn'].mean().sort_values(ascending=False)
+
+    fig, ax = plt.subplots(figsize=(10, 5))
+    city_churn_rate.plot(kind='bar', color='coral', ax=ax)
+    ax.set_title("Churn Rate by City")
+    ax.set_ylabel("Proportion of Drivers Left")
     st.pyplot(fig)
-    st.info("📈 Quarterly Rating & Grade show strong correlation with churn.")
+
+    st.caption("📊 Top churn in C20, C26, C29 — investigate driver support & operations there.")
+
+    # -----------------------------
+    # 7️⃣ Correlation Heatmap
+    # -----------------------------
+    st.markdown("### 🔥 Correlation Heatmap (Numeric Features)")
+    numeric_df = df.select_dtypes(include=['number'])
+
+    fig, ax = plt.subplots(figsize=(10, 8))
+    sns.heatmap(numeric_df.corr(), annot=True, cmap='coolwarm', linewidths=0.5, ax=ax)
+    ax.set_title("Correlation Heatmap")
+    st.pyplot(fig)
+
+    st.success("📌 Key Insight: Quarterly Rating & Grade are strongest churn indicators.")
+
 
 # =====================================================================
 # ----------------------------- TAB 2: MODEL -----------------------------
@@ -272,4 +365,7 @@ with tab3:
     """)
 
     st.info("📈 These insights can guide data-backed policy design, targeted investments, and performance-linked incentives.")
+
+
+
 
